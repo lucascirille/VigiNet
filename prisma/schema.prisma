@@ -7,25 +7,45 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Usuario {
-  id           Int          @id @default(autoincrement())
+model Vecindario {
+  vecindarioId Int       @id @default(autoincrement())
   nombre       String
-  email        String        @unique
-  suscripciones Suscripcion[]
-  alarmas      Alarma[]
+  ciudad       String
+  ubicacion    String
+  usuarios     Usuario[] // Relación con usuarios
 }
 
-model Suscripcion {
-  id           Int          @id @default(autoincrement())
-  tipo         String
-  usuarioId    Int
-  usuario      Usuario       @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+model Notificacion {
+  notificacionId Int      @id @default(autoincrement())
+  titulo         String
+  notificacion   String
+  contenido      String
+  tipo           String
+  fechaHora      DateTime
+  usuario        Usuario  @relation(fields: [usuarioId], references: [usuarioId])
+  usuarioId      Int
+}
+
+model Usuario {
+  usuarioId      Int            @id @default(autoincrement())
+  nombre         String
+  apellido       String
+  email          String         @unique
+  contrasena     String
+  telefono       String
+  direccion      String
+  vecindario     Vecindario     @relation(fields: [vecindarioId], references: [vecindarioId])
+  vecindarioId   Int
+  notificaciones Notificacion[]
+  alarmas        Alarma[]
 }
 
 model Alarma {
-  id           Int          @id @default(autoincrement())
-  descripcion  String
-  activo       Boolean      @default(true)
-  usuarioId    Int
-  usuario      Usuario       @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  alarmaId    Int       @id @default(autoincrement())
+  descripcion String
+  activo      Boolean   @default(true)
+  fechaHora   DateTime
+  tipo        String
+  usuario     Usuario   @relation(fields: [usuarioId], references: [usuarioId])
+  usuarioId   Int
 }
