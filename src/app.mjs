@@ -1,11 +1,14 @@
 // src/app.mjs
 import express from 'express';
 import vecindarioRoutes from './routes/vecindarioRoutes.mjs';
+import morgan from 'morgan';
+import globalErrorHandler from './middleware/globalErrorHandler.mjs';
 
 const app = express();
 
 // Middlewares
 app.use(express.json());
+app.use(morgan('dev'));
 
 // Ruta básica para la raíz
 app.get('/', (req, res) => {
@@ -16,14 +19,6 @@ app.get('/', (req, res) => {
 app.use('/api/vecindarios', vecindarioRoutes);
 
 // Middleware de manejo de errores
-app.use((err, req, res, next) => {
-	res.status(500).json({ message: err.message });
-});
-
-const port = process.env.PORT || 3000;
-
-app.listen(port, () => {
-	console.log(`Servidor corriendo en el puerto ${port}`);
-});
+app.use(globalErrorHandler);
 
 export default app;

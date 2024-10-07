@@ -42,7 +42,7 @@ export const updateVecindario = async (id, data) => {
 
 export const deleteVecindario = async (id) => {
 	return await prisma.vecindario.delete({
-		where: { vecindarioId: parseInt(id) },
+		where: { vecindarioId: parseInt(id) }
 	});
 };
 
