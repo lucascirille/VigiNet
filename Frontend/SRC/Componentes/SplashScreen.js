@@ -37,6 +37,6 @@ const styles = StyleSheet.create({
   logo: { width: 200, height: 210, marginBottom: 20 },
   title: { fontSize: 58, fontWeight: 'bold', color: '#000000', textAlign: 'center' },
   subtitle: { fontSize: 30, color: '#000000', marginBottom: 100, fontWeight: 'bold', textAlign: 'center' },
-  button: { backgroundColor: '#093916', paddingHorizontal: 40, paddingVertical: 20, borderRadius: 20 },
+  button: { backgroundColor: '#093916', paddingHorizontal: 50, paddingVertical: 20, borderRadius: 100 },
   buttonText: { color: '#FFF', fontSize: 20, fontWeight: 'bold', textAlign: 'center' },
 });

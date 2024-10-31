@@ -1,8 +1,16 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Linking } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function AlertScreen() {
+  const handleEmergencyCall = () => {
+    // Intentar realizar una llamada al 911
+    Linking.openURL('tel:911')
+      .catch(() => {
+        Alert.alert('Error', 'No se puede realizar la llamada');
+      });
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.grid}>
@@ -14,7 +22,7 @@ export default function AlertScreen() {
         ))}
       </View>
       <View style={styles.emergencyContainer}>
-        <TouchableOpacity style={styles.emergencyButton}>
+        <TouchableOpacity style={styles.emergencyButton} onPress={handleEmergencyCall}>
           <Text style={styles.emergencyText}>Emergencia</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.whatsappButton}>
@@ -38,12 +46,12 @@ const alertTypes = [
 
 const styles = StyleSheet.create({
   container: { flex: 1, alignItems: 'center', padding: 16 },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 16 },
-  grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center' },
-  alertButton: { width: 100, height: 100, alignItems: 'center', justifyContent: 'center', margin: 8, borderRadius: 10 },
-  alertText: { color: 'white', marginTop: 8, textAlign: 'center' },
-  emergencyContainer: { flexDirection: 'row', marginTop: 20 },
-  emergencyButton: { backgroundColor: 'red', paddingHorizontal: 40, paddingVertical: 10, borderRadius: 5 },
-  emergencyText: { color: 'white', fontSize: 20,fontWeight: 'bold'},
-  whatsappButton: { backgroundColor: 'green', padding: 10, borderRadius: 30, marginLeft: 20 },
+  title: { fontSize: 20, fontWeight: 'bold', marginBottom: 20, width: '100%', textAlign: 'center' },
+  grid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', marginTop: 10 },
+  alertButton: { width: 130, height: 115, alignItems: 'center', justifyContent: 'center', margin: 8, borderRadius: 30 },
+  alertText: { color: 'white', marginTop: 8, textAlign: 'center', fontSize: 16 },
+  emergencyContainer: { flexDirection: 'row', marginTop: 20, justifyContent: 'center' },
+  emergencyButton: { backgroundColor: 'red', paddingHorizontal: 40, paddingVertical: 10, borderRadius: 100, alignItems: 'center', justifyContent: 'center' },
+  emergencyText: { color: 'white', fontSize: 22, fontWeight: 'bold', textAlign: 'center' },
+  whatsappButton: { backgroundColor: 'green', padding: 15, borderRadius: 30, marginLeft: 10, alignItems: 'center' },
 });
