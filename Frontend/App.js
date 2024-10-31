@@ -19,17 +19,20 @@ const Tab = createBottomTabNavigator();
 
 const THEME = {
   colors: {
-    primary: 'teal',
+    primary: '#1B786D', // Verde principal
     inactive: 'gray',
     background: 'white',
+    headerBackground: '#1B786D', // Fondo del header
   },
   headerStyle: {
     backgroundColor: 'white',
+    backgroundColor: '#1B786D', // Fondo del header en verde
     elevation: 0,
     shadowOpacity: 0,
   },
   headerTitleStyle: {
     fontWeight: '600',
+    color: '#000000', // Cambia el color del texto a blanco
   },
 };
 
@@ -95,7 +98,9 @@ function MainTabNavigator() {
         },
         headerStyle: THEME.headerStyle,
         headerTitleStyle: THEME.headerTitleStyle,
-      })}
+        headerTitleAlign: 'center',
+        marginRight: 40,
+            })}
     >
       <Tab.Screen name="Alertas" component={AlertScreen} />
       <Tab.Screen name="Estadísticas" component={StatisticsScreen} />
@@ -105,7 +110,7 @@ function MainTabNavigator() {
 }
 
 export default function App() {
-  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+  const [isAuthenticated, setIsAuthenticated] = React.useState(true);
   
   return (
     <NavigationContainer>
@@ -113,3 +118,4 @@ export default function App() {
     </NavigationContainer>
   );
 }
+

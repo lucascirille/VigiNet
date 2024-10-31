@@ -1,11 +1,38 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Image, ScrollView } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 
 export default function ProfileScreen() {
+  const [profileImage, setProfileImage] = useState('https://via.placeholder.com/100'); // Estado para la imagen de perfil
+
+  // Función para seleccionar una imagen
+  const pickImage = async () => {
+    // Pedir permiso para acceder a la galería
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    
+    if (permissionResult.granted === false) {
+      alert('Se necesita permiso para acceder a la galería!');
+      return;
+    }
+
+    // Abrir la galería para seleccionar una imagen
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    // Asegúrate de acceder a la URI correctamente
+    if (!result.canceled) {
+      setProfileImage(result.assets[0].uri); // Actualizar la imagen de perfil usando la URI correcta
+    }
+  };
+
   return (
-    <View style={styles.container}>
-      <Image source={{ uri: 'https://via.placeholder.com/100' }} style={styles.profileImage} />
-      <TouchableOpacity>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Image source={{ uri: profileImage }} style={styles.profileImage} />
+      <TouchableOpacity onPress={pickImage}>
         <Text style={styles.editText}>Editar foto de perfil</Text>
       </TouchableOpacity>
       {profileInfo.map((info, index) => (
@@ -17,7 +44,7 @@ export default function ProfileScreen() {
       <TouchableOpacity style={styles.logoutButton}>
         <Text style={styles.logoutText}>Cerrar Sesión</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -34,12 +61,12 @@ const profileInfo = [
 ];
 
 const styles = StyleSheet.create({
-  container: { flex: 1, alignItems: 'center', padding: 16 },
+  container: { flexGrow: 1, alignItems: 'center', padding: 16 },
   profileImage: { width: 100, height: 100, borderRadius: 50, marginBottom: 10 },
-  editText: { color: 'teal', marginBottom: 20 },
-  infoContainer: { width: '100%', padding: 10, borderBottomWidth: 1, borderBottomColor: '#ecf0f1' },
+  editText: { color: '#0D99FF', marginBottom: 20 },
+  infoContainer: { width: '100%', padding: 10, borderBottomWidth: 10, borderBottomColor: '#ecf0f1' },
   infoLabel: { fontSize: 14, color: 'gray' },
-  infoValue: { fontSize: 16, fontWeight: 'bold' },
-  logoutButton: { marginTop: 30, backgroundColor: 'teal', paddingHorizontal: 40, paddingVertical: 10, borderRadius: 5 },
-  logoutText: { color: 'white', fontSize: 18 },
-});
+  infoValue: { fontSize: 16, fontWeight: 'bold', marginTop: 10 },
+  logoutButton: { marginTop: 30, backgroundColor: 'teal', paddingHorizontal: 40, paddingVertical: 10, borderRadius: 90, alignItems:'center' },
+  logoutText: { color: 'white', fontSize: 20,textAlign: 'center' },
+}); 

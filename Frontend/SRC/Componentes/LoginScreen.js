@@ -10,7 +10,7 @@ export default function LoginScreen({ navigation }) {
         style={styles.button}
         onPress={() => navigation.navigate('Password')}
       >
-        <Text style={styles.buttonText}>Iniciar Sesión Con Email</Text>
+        <Text style={styles.buttonText}>Iniciar sesión con Email</Text>
       </TouchableOpacity>
     </View>
   );
