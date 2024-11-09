@@ -12,6 +12,11 @@ export default function LoginScreen({ navigation }) {
     console.log(email);
   };
 
+  const handleRegister = () => {
+    navigation.navigate("Register");
+    console.log("Estas en register");
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.label}>Ingrese su email para iniciar sesión</Text>
@@ -24,6 +29,9 @@ export default function LoginScreen({ navigation }) {
       />
       <Pressable style={styles.button} onPress={handleEmailSubmit}>
         <Text style={styles.buttonText}>Iniciar Sesión Con Email</Text>
+      </Pressable>
+      <Pressable style={styles.button} onPress={handleRegister}>
+        <Text style={styles.buttonText}>Crear Cuenta</Text>
       </Pressable>
     </View>
   );
