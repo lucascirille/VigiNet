@@ -20,7 +20,7 @@ export default function AuthStack() {
       }}
     >
       <Stack.Screen
-        name="Viginet"
+        name="Splash"
         component={SplashScreen}
         options={{ headerShown: false }}
       />

@@ -23,10 +23,9 @@ export default function PasswordScreen({ navigation }) {
     setLoading(true); // Indicamos que está cargando
 
     try {
-      await loginUser(authData.email, password); // Llama a la función del contexto para hacer el login
-      if (authData.isAuthenticated) {
+      let auth = await loginUser(authData.email, password); // Llama a la función del contexto para hacer el login
+      if (auth) {
         Alert.alert("Éxito", "Inicio de sesión exitoso.");
-        navigation.replace("MainTabs"); // Navegar a la vista principal después de login exitoso
       } else {
         Alert.alert("Error", "Credenciales incorrectas.");
       }
