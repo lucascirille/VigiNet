@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
   const loginUser = async (email, password) => {
     try {
       const data = await login(email, password); // Llama a la función de autenticación
-      if (data.success) {
+      if (data) {
         // Si la autenticación es exitosa, guarda el token y el email
         console.log("llego a cargar el AuthData");
         setAuthData({
@@ -26,6 +26,7 @@ export const AuthProvider = ({ children }) => {
           isAuthenticated: true,
           token: data.token,
         });
+        return true;
       } else {
         // Si la autenticación falla, muestra un mensaje de error
         alert("Error al iniciar sesión: " + data.message);
