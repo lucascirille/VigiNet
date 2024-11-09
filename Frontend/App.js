@@ -6,6 +6,7 @@ import MainTabNavigator from "./src/navigation/MainTabNavigator";
 
 function AppContent() {
   const { authData } = useAuth();
+  // authData.isAuthenticated = true;
 
   return (
     <NavigationContainer>
