@@ -10,42 +10,67 @@ datasource db {
 model Vecindario {
   vecindarioId Int       @id @default(autoincrement())
   nombre       String
-  ciudad       String
+  localidadId  Int
+  Localidad    Localidad @relation(fields: [localidadId], references: [localidadId])
   ubicacion    String
   usuarios     Usuario[] // Relación con usuarios
 }
 
+model Pais {
+  paisId       Int        @id 
+  nombre       String     @unique
+  provincias   Provincia[]
+}
+
+model Provincia {
+  provinciaId  Int        @id
+  nombre       String
+  paisId       Int
+  localidades  Localidad[]
+
+  Pais         Pais       @relation(fields: [paisId], references: [paisId])
+}
+
+model Localidad {
+  localidadId  Int        @id
+  nombre       String
+  provinciaId  Int
+
+  Provincia    Provincia  @relation(fields: [provinciaId], references: [provinciaId])
+  vecindarios  Vecindario[] // Relación opcional para acceso desde Localidad
+}
+
 model Notificacion {
-  notificacionId Int      @id @default(autoincrement())
+  notificacionId Int       @id @default(autoincrement())
   titulo         String
   notificacion   String
   contenido      String
   tipo           String
-  fechaHora      DateTime @default(now())
-  usuario        Usuario  @relation(fields: [usuarioId], references: [usuarioId])
+  fechaHora      DateTime  @default(now())
   usuarioId      Int
+  usuario        Usuario   @relation(fields: [usuarioId], references: [usuarioId])
 }
 
 model Usuario {
-  usuarioId      Int            @id @default(autoincrement())
+  usuarioId      Int             @id @default(autoincrement())
   nombre         String
   apellido       String
-  email          String         @unique
+  email          String          @unique
   contrasena     String
   telefono       String
   direccion      String
-  vecindario     Vecindario     @relation(fields: [vecindarioId], references: [vecindarioId])
   vecindarioId   Int
+  vecindario     Vecindario      @relation(fields: [vecindarioId], references: [vecindarioId])
   notificaciones Notificacion[]
   alarmas        Alarma[]
 }
 
 model Alarma {
-  alarmaId    Int       @id @default(autoincrement())
-  descripcion String
-  activo      Boolean   @default(true)
-  fechaHora   DateTime  @default(now())
-  tipo        String
-  usuario     Usuario   @relation(fields: [usuarioId], references: [usuarioId])
-  usuarioId   Int
+  alarmaId       Int       @id @default(autoincrement())
+  descripcion    String
+  activo         Boolean   @default(true)
+  fechaHora      DateTime  @default(now())
+  tipo           String
+  usuarioId      Int
+  usuario        Usuario   @relation(fields: [usuarioId], references: [usuarioId])
 }
