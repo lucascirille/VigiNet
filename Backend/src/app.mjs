@@ -8,6 +8,7 @@ import authRoutes from "./routes/authRoutes.mjs"; // Importa las rutas de autent
 import morgan from "morgan";
 import cors from "cors";
 import globalErrorHandler from "./middleware/globalErrorHandler.mjs";
+import { cargarEnumerativa } from "./helpers/loadGeoNamesData.mjs";
 
 const app = express();
 
@@ -42,5 +43,7 @@ app.use("/api/usuarios", usuarioRoutes);
 
 // Middleware de manejo de errores
 app.use(globalErrorHandler);
+
+cargarEnumerativa();
 
 export default app;
