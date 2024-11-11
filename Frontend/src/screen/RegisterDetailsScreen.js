@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -10,8 +10,30 @@ import {
   ScrollView,
   Platform,
 } from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import {
+  setPais,
+  setProvincia,
+  setLocalidad,
+} from "../service/EnumGeoNamesService.js";
 
 export default function RegisterDetailsScreen({ navigation }) {
+  const [paises, setPaises] = useState([]);
+
+  useEffect(() => {
+    const llamadaPaises = async () => {
+      // Llamada a la API para obtener los paises
+      try {
+        let paises = await setPais();
+        setPaises(paises);
+      } catch (error) {
+        console.error("Error al obtener los paises", error);
+      }
+    };
+
+    llamadaPaises();
+  }, []);
+
   const [formData, setFormData] = useState({
     nombre: "",
     usuario: "",
@@ -70,24 +92,17 @@ export default function RegisterDetailsScreen({ navigation }) {
           value={formData.telefono}
           onChangeText={(telefono) => handleLoad("telefono", telefono)}
         />
-        <TextInput
+        <Picker
+          selectedValue={formData.pais}
+          onValueChange={(pais) => handleLoad("pais", pais)}
           style={styles.input}
-          placeholder="País"
-          value={formData.pais}
-          onChangeText={(pais) => handleLoad("pais", pais)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Provincia"
-          value={formData.provincia}
-          onChangeText={(provincia) => handleLoad("provincia", provincia)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Localidad"
-          value={formData.localidad}
-          onChangeText={(localidad) => handleLoad("localidad", localidad)}
-        />
+        >
+          <Picker.Item label="Selecciona un país" value="" />
+          {paises.map((pais) => (
+            <Picker.Item key={pais.paisId} label={pais.nombre} value={pais} />
+          ))}
+        </Picker>
+
         <TextInput
           style={styles.input}
           placeholder="vecindario"
