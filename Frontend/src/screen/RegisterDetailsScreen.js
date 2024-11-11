@@ -19,7 +19,7 @@ export default function RegisterDetailsScreen({ navigation }) {
     pais: "",
     provincia: "",
     localidad: "",
-    barrio: "",
+    vecindario: "",
   });
 
   const handleLoad = (field, value) => {
@@ -31,7 +31,7 @@ export default function RegisterDetailsScreen({ navigation }) {
 
   const handleRegister = () => {
     if (
-      !formData.barrio ||
+      !formData.vecindario ||
       !formData.usuario ||
       !formData.localidad ||
       !formData.pais ||
@@ -90,9 +90,9 @@ export default function RegisterDetailsScreen({ navigation }) {
         />
         <TextInput
           style={styles.input}
-          placeholder="Barrio"
-          value={formData.barrio}
-          onChangeText={(barrio) => handleLoad("barrio", barrio)}
+          placeholder="vecindario"
+          value={formData.vecindario}
+          onChangeText={(vecindario) => handleLoad("vecindario", vecindario)}
         />
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
           <Text style={styles.buttonText}>Registrarse</Text>

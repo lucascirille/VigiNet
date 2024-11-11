@@ -4,7 +4,9 @@ import vecindarioRoutes from "./routes/vecindarioRoutes.mjs";
 import alarmaRoutes from "./routes/alarmaRoutes.mjs";
 import usuarioRoutes from "./routes/usuarioRoutes.mjs";
 import notificacionRoutes from "./routes/notificacionRoutes.mjs";
+import enumGeoNamesRoutes from "./routes/enumGeoNamesRoutes.mjs";
 import authRoutes from "./routes/authRoutes.mjs"; // Importa las rutas de autenticación
+import { verifyGeoDB } from "./helpers/verifyGeoDB.mjs";
 import morgan from "morgan";
 import cors from "cors";
 import globalErrorHandler from "./middleware/globalErrorHandler.mjs";
@@ -41,9 +43,15 @@ app.use("/api/notificaciones", notificacionRoutes);
 // Rutas de Usuario
 app.use("/api/usuarios", usuarioRoutes);
 
+// Rutas de Enumerativa
+app.use("/api/enumGeoNames", enumGeoNamesRoutes);
+
 // Middleware de manejo de errores
 app.use(globalErrorHandler);
 
-cargarEnumerativa();
+// Verifica si la base de datos de geonames está cargada
+if (await verifyGeoDB()) {
+  cargarEnumerativa();
+}
 
 export default app;

@@ -1,2 +1,1 @@
-Falta vincular el Back, con el front.
-Habria que cargar datos para ver si funciona despues.
+Falta hacer funcionar los apartados del home, como alertas, estadisticas y perfil.
