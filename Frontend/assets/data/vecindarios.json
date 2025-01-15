@@ -1,0 +1,15 @@
+{
+    "barrios": [
+      { "type": "Feature", "properties": { "localidad": "Quilmes-Ezpeleta" } },
+      { "type": "Feature", "properties": { "localidad": "Don Bosco" } },
+      { "type": "Feature", "properties": { "localidad": "Quilmes Oeste" } },
+      { "type": "Feature", "properties": { "localidad": "Villa la Florida" } },
+      { "type": "Feature", "properties": { "localidad": "San Francisco Solano" } },
+      { "type": "Feature", "properties": { "localidad": "Ezpeleta" } },
+      { "type": "Feature", "properties": { "localidad": "Bernal Oeste" } },
+      { "type": "Feature", "properties": { "localidad": "Quilmes" } },
+      { "type": "Feature", "properties": { "localidad": "Bernal" } }
+    ]
+}
+
+

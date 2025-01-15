@@ -11,33 +11,23 @@ model Vecindario {
   vecindarioId Int       @id @default(autoincrement())
   nombre       String
   localidadId  Int
-  Localidad    Localidad @relation(fields: [localidadId], references: [localidadId])
+  Localidad    Localidad  @relation(fields: [localidadId], references: [localidadId])
   ubicacion    String
   usuarios     Usuario[] // Relación con usuarios
 }
 
-model Pais {
-  paisId       Int        @id 
-  nombre       String     @unique
-  provincias   Provincia[]
-}
-
 model Provincia {
-  provinciaId  Int        @id
+  provinciaId  Int        @id @default(autoincrement())
   nombre       String
-  paisId       Int
-  localidades  Localidad[]
-
-  Pais         Pais       @relation(fields: [paisId], references: [paisId])
+  localidades  Localidad[] // Relación con localidades
 }
 
 model Localidad {
-  localidadId  Int        @id
+  localidadId  Int        @id @default(autoincrement())
   nombre       String
   provinciaId  Int
-
   Provincia    Provincia  @relation(fields: [provinciaId], references: [provinciaId])
-  vecindarios  Vecindario[] // Relación opcional para acceso desde Localidad
+  vecindarios  Vecindario[] // Relación con vecindarios
 }
 
 model Notificacion {
@@ -61,8 +51,8 @@ model Usuario {
   direccion      String
   vecindarioId   Int
   vecindario     Vecindario      @relation(fields: [vecindarioId], references: [vecindarioId])
-  notificaciones Notificacion[]
-  alarmas        Alarma[]
+  notificaciones Notificacion[]  // Relación con notificaciones
+  alarmas        Alarma[]        // Relación con alarmas
 }
 
 model Alarma {

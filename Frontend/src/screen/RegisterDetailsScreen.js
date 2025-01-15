@@ -17,22 +17,13 @@ import {
   setLocalidad,
 } from "../service/EnumGeoNamesService.js";
 
+import VecindariosPicker from "../service/GeoJsonVecindarios.jsx";
+import CountriesPicker from "../service/CountriesService.jsx";
+
+
+
 export default function RegisterDetailsScreen({ navigation }) {
-  const [paises, setPaises] = useState([]);
-
-  useEffect(() => {
-    const llamadaPaises = async () => {
-      // Llamada a la API para obtener los paises
-      try {
-        let paises = await setPais();
-        setPaises(paises);
-      } catch (error) {
-        console.error("Error al obtener los paises", error);
-      }
-    };
-
-    llamadaPaises();
-  }, []);
+  
 
   const [formData, setFormData] = useState({
     nombre: "",
@@ -42,6 +33,7 @@ export default function RegisterDetailsScreen({ navigation }) {
     provincia: "",
     localidad: "",
     vecindario: "",
+    email: "",
   });
 
   const handleLoad = (field, value) => {
@@ -59,7 +51,8 @@ export default function RegisterDetailsScreen({ navigation }) {
       !formData.pais ||
       !formData.provincia ||
       !formData.telefono ||
-      !formData.nombre
+      !formData.nombre ||
+      !formData.email
     ) {
       Alert.alert("Error", "Por favor, complete todos los campos.");
       return;
@@ -81,6 +74,15 @@ export default function RegisterDetailsScreen({ navigation }) {
         />
         <TextInput
           style={styles.input}
+          placeholder="Email"
+          value={formData.email}
+          onChangeText={(email) => handleLoad("email", email)}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+        
+        <TextInput
+          style={styles.input}
           placeholder="Usuario"
           value={formData.usuario}
           onChangeText={(usuario) => handleLoad("usuario", usuario)}
@@ -91,23 +93,19 @@ export default function RegisterDetailsScreen({ navigation }) {
           keyboardType="phone-pad"
           value={formData.telefono}
           onChangeText={(telefono) => handleLoad("telefono", telefono)}
-        />
-        <Picker
+        />        
+        <CountriesPicker
           selectedValue={formData.pais}
           onValueChange={(pais) => handleLoad("pais", pais)}
           style={styles.input}
-        >
-          <Picker.Item label="Selecciona un país" value="" />
-          {paises.map((pais) => (
-            <Picker.Item key={pais.paisId} label={pais.nombre} value={pais} />
-          ))}
-        </Picker>
-
-        <TextInput
+        />
+        <VecindariosPicker
+          selectedValue={formData.vecindario}
+          onValueChange={(vecindario) => {
+            console.log("Selected vecindario:", vecindario); // Debug log
+            handleLoad("vecindario", vecindario);
+          }}
           style={styles.input}
-          placeholder="vecindario"
-          value={formData.vecindario}
-          onChangeText={(vecindario) => handleLoad("vecindario", vecindario)}
         />
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
           <Text style={styles.buttonText}>Registrarse</Text>
