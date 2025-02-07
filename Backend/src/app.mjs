@@ -54,4 +54,6 @@ if (await verifyGeoDB()) {
   cargarEnumerativa();
 }
 
+
+
 export default app;

@@ -1,12 +1,30 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Pressable, StyleSheet } from "react-native";
-import { useAuth } from "../context/AuthContext"; // Asegúrate de importar el contexto
+import { View, Text, TextInput, Pressable, StyleSheet, Alert } from "react-native";
+import { useAuth } from "../context/AuthContext";
 
 export default function LoginScreen({ navigation }) {
   const { setAuthData } = useAuth(); // Accede a la función para actualizar el contexto
   const [email, setEmail] = useState(""); // Estado local para almacenar el email
+  const [error, setError] = useState(""); // Estado para manejar el mensaje de error
+
+  const validateEmail = (email) => {
+    // Expresión regular para validar el formato del correo electrónico
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
 
   const handleEmailSubmit = () => {
+    if (!email) {
+      setError("Por favor, ingresa tu correo electrónico.");
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setError("Por favor, ingresa un correo electrónico válido.");
+      return;
+    }
+
+    setError(""); // Limpia el mensaje de error si el correo es válido
     setAuthData((prev) => ({ ...prev, email })); // Almacena el email en el contexto
     navigation.navigate("Password"); // Navega a la pantalla de contraseña
     console.log(email);
@@ -25,12 +43,16 @@ export default function LoginScreen({ navigation }) {
         placeholder="email@dominio.com"
         keyboardType="email-address"
         value={email}
-        onChangeText={setEmail} // Llama a la función al presionar "Enter"
+        onChangeText={(text) => {
+          setEmail(text);
+          setError(""); // Limpia el mensaje de error cuando el usuario comienza a escribir
+        }}
       />
-      <Pressable style={styles.button} onPress={handleEmailSubmit}>
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+      <Pressable style={[styles.button, styles.marginBottom]} onPress={handleEmailSubmit}>
         <Text style={styles.buttonText}>Iniciar Sesión Con Email</Text>
       </Pressable>
-      <Pressable style={styles.button} onPress={handleRegister}>
+      <Pressable style={[styles.button, styles.marginTop, styles.buttonRegister]} onPress={handleRegister}>
         <Text style={styles.buttonText}>Crear Cuenta</Text>
       </Pressable>
     </View>
@@ -54,4 +76,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonText: { color: "#FFF", fontSize: 16 },
+  marginBottom: { marginBottom: 20 },
+  marginTop: { marginTop: 20 },
+  buttonRegister: { backgroundColor: "#007BFF" }, // Color azul para el botón de Crear Cuenta
+  errorText: { color: "red", marginBottom: 10 },
 });
