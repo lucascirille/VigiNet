@@ -9,7 +9,7 @@ export default function ProfileScreen() {
   const pickImage = async () => {
     // Pedir permiso para acceder a la galería
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    
+
     if (permissionResult.granted === false) {
       alert('Se necesita permiso para acceder a la galería!');
       return;
@@ -29,6 +29,11 @@ export default function ProfileScreen() {
     }
   };
 
+  const handleEmailSubmit = () => {
+    navigation.navigate("Login");
+  };
+
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Image source={{ uri: profileImage }} style={styles.profileImage} />
@@ -41,9 +46,10 @@ export default function ProfileScreen() {
           <Text style={styles.infoValue}>{info.value}</Text>
         </View>
       ))}
-      <TouchableOpacity style={styles.logoutButton}>
+      <Pressable style={styles.logoutButton} onPress={handleEmailSubmit}>
         <Text style={styles.logoutText}>Cerrar Sesión</Text>
-      </TouchableOpacity>
+      </Pressable>
+
     </ScrollView>
   );
 }
@@ -67,6 +73,6 @@ const styles = StyleSheet.create({
   infoContainer: { width: '100%', padding: 10, borderBottomWidth: 10, borderBottomColor: '#ecf0f1' },
   infoLabel: { fontSize: 14, color: 'gray' },
   infoValue: { fontSize: 16, fontWeight: 'bold', marginTop: 10 },
-  logoutButton: { marginTop: 30, backgroundColor: 'teal', paddingHorizontal: 40, paddingVertical: 10, borderRadius: 90, alignItems:'center' },
-  logoutText: { color: 'white', fontSize: 20,textAlign: 'center' },
+  logoutButton: { marginTop: 30, backgroundColor: 'teal', paddingHorizontal: 40, paddingVertical: 10, borderRadius: 90, alignItems: 'center' },
+  logoutText: { color: 'white', fontSize: 20, textAlign: 'center' },
 }); 

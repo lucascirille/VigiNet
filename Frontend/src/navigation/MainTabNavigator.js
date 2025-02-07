@@ -2,7 +2,6 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import AlertScreen from "../screen/AlertScreen";
-import StatisticsScreen from "../screen/StatisticsScreen";
 import ProfileScreen from "../screen/ProfileScreen";
 import { THEME } from "../theme/theme";
 
@@ -36,7 +35,6 @@ export default function MainTabNavigator() {
       })}
     >
       <Tab.Screen name="Alertas" component={AlertScreen} />
-      <Tab.Screen name="Estadísticas" component={StatisticsScreen} />
       <Tab.Screen name="Perfil" component={ProfileScreen} />
     </Tab.Navigator>
   );
