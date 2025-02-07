@@ -3,8 +3,8 @@ import { View, Text, Image, StyleSheet, TouchableOpacity, ImageBackground } from
 
 export default function SplashScreen({ navigation }) {
   return (
-    <ImageBackground 
-      source={require('../../assets/Fondo.png')} 
+    <ImageBackground
+      source={require('../../assets/Fondo.png')}
       style={styles.background}
     >
       <View style={styles.container}>
@@ -23,17 +23,17 @@ export default function SplashScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  background: { 
-    flex: 1, 
-    justifyContent: 'center', 
-    alignItems: 'center', 
+  background: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   container: {
     justifyContent: 'center',
     alignItems: 'center',
   },
-  
+
   logo: { width: 200, height: 210, marginBottom: 20 },
   title: { fontSize: 58, fontWeight: 'bold', color: '#000000', textAlign: 'center' },
   subtitle: { fontSize: 30, color: '#000000', marginBottom: 100, fontWeight: 'bold', textAlign: 'center' },

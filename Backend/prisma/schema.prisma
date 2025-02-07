@@ -12,7 +12,6 @@ model Vecindario {
   nombre       String
   localidadId  Int
   Localidad    Localidad @relation(fields: [localidadId], references: [localidadId])
-  ubicacion    String
   usuarios     Usuario[] // Relación con usuarios
 }
 
