@@ -16,9 +16,8 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import { FontAwesome } from "@expo/vector-icons"; // Asegúrate de tener este paquete instalado
-
 const { width } = Dimensions.get("window");
-const BASE_URL = "http://localhost:3000/api"; // Asegúrate de usar la IP de tu backend
+const BASE_URL = "http://localhost:3000/api"; // Asegurate de usar la IP de tu backend
 
 export default function RegisterDetailsScreen({ navigation, route }) {
   const { email } = route.params;
@@ -35,7 +34,6 @@ export default function RegisterDetailsScreen({ navigation, route }) {
   const [showPassword, setShowPassword] = useState(false); // Para la visibilidad de la contraseña
   const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Para la visibilidad de la confirmación de contraseña
   const [showPicker, setShowPicker] = useState(false);
-  const [error, setError] = useState(""); // Para el mensaje de error
 
   useEffect(() => {
     const fetchVecindarios = () => {
@@ -63,22 +61,6 @@ export default function RegisterDetailsScreen({ navigation, route }) {
   };
 
   const handleRegister = async () => {
-    // Verificación de que todas las contraseñas coincidan
-    if (formData.contrasena !== formData.confirmarContrasena) {
-      setError("Las contraseñas no coinciden.");
-      return;
-    }
-
-    // Verificar que la contraseña cumpla con los requisitos
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
-    if (!passwordRegex.test(formData.contrasena)) {
-      setError("La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula y un número.");
-      return;
-    }
-
-    // Limpiar errores previos
-    setError("");
-
     if (
       !formData.nombre ||
       !formData.apellido ||
@@ -89,6 +71,11 @@ export default function RegisterDetailsScreen({ navigation, route }) {
       !formData.vecindarioId
     ) {
       Alert.alert("Error", "Por favor, complete todos los campos.");
+      return;
+    }
+
+    if (formData.contrasena !== formData.confirmarContrasena) {
+      Alert.alert("Error", "Las contraseñas no coinciden.");
       return;
     }
 
@@ -136,10 +123,7 @@ export default function RegisterDetailsScreen({ navigation, route }) {
             value={formData.contrasena}
             onChangeText={(value) => handleLoad("contrasena", value)}
           />
-          <TouchableOpacity
-            style={styles.eyeIcon}
-            onPress={() => setShowPassword(!showPassword)}
-          >
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
             <FontAwesome name={showPassword ? "eye-slash" : "eye"} size={24} color="#000" />
           </TouchableOpacity>
         </View>
@@ -151,10 +135,7 @@ export default function RegisterDetailsScreen({ navigation, route }) {
             value={formData.confirmarContrasena}
             onChangeText={(value) => handleLoad("confirmarContrasena", value)}
           />
-          <TouchableOpacity
-            style={styles.eyeIcon}
-            onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-          >
+          <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
             <FontAwesome name={showConfirmPassword ? "eye-slash" : "eye"} size={24} color="#000" />
           </TouchableOpacity>
         </View>
@@ -202,7 +183,6 @@ export default function RegisterDetailsScreen({ navigation, route }) {
             </Picker>
           </View>
         </Modal>
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
           <Text style={styles.buttonText}>Registrarse</Text>
         </TouchableOpacity>
@@ -242,10 +222,6 @@ const styles = StyleSheet.create({
     width: width * 0.85,
     marginBottom: 15,
   },
-  eyeIcon: {
-    position: "absolute",
-    right: 10,
-  },
   pickerContainer: {
     width: width * 0.85,
     borderWidth: 1,
@@ -280,11 +256,5 @@ const styles = StyleSheet.create({
     padding: 20,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
-  },
-  errorText: {
-    color: "red",
-    fontSize: 14,
-    marginBottom: 10,
-    textAlign: "center",
   },
 });

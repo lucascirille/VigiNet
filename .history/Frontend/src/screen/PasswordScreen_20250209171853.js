@@ -7,15 +7,15 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-import { useAuth } from "../context/AuthContext";
-import Icon from "react-native-vector-icons/Feather";
+import { useAuth } from "../context/AuthContext"; // Importa el contexto
+import Icon from "react-native-vector-icons/Feather"; // Importa el ícono
 
 export default function PasswordScreen({ navigation }) {
-  const { authData, loginUser } = useAuth();
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [secureText, setSecureText] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
+  const { authData, loginUser } = useAuth(); // Accede al contexto
+  const [password, setPassword] = useState(""); // Estado para la contraseña
+  const [loading, setLoading] = useState(false); // Estado para la carga
+  const [secureText, setSecureText] = useState(true); // Estado para mostrar/ocultar la contraseña
+  const [errorMessage, setErrorMessage] = useState(""); // Estado para el mensaje de error
 
   const handleLogin = async () => {
     if (!authData.email || !password) {
@@ -23,8 +23,8 @@ export default function PasswordScreen({ navigation }) {
       return;
     }
 
-    setLoading(true);
-    setErrorMessage("");
+    setLoading(true); // Indicamos que está cargando
+    setErrorMessage(""); // Reseteamos el mensaje de error
 
     try {
       let auth = await loginUser(authData.email, password); 
@@ -47,7 +47,7 @@ export default function PasswordScreen({ navigation }) {
         <TextInput
           style={styles.input}
           placeholder="Contraseña"
-          secureTextEntry={secureText}
+          secureTextEntry={secureText} // Controla si la contraseña está oculta o visible
           onChangeText={setPassword}
           value={password}
         />
@@ -59,7 +59,7 @@ export default function PasswordScreen({ navigation }) {
       <TouchableOpacity
         style={styles.button}
         onPress={handleLogin}
-        disabled={loading}
+        disabled={loading} // Deshabilita el botón mientras carga
       >
         <Text style={styles.buttonText}>
           {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
@@ -93,6 +93,5 @@ const styles = StyleSheet.create({
     color: "red",
     fontSize: 14,
     marginTop: 20,
-    marginBottom: 20,
   },
 });

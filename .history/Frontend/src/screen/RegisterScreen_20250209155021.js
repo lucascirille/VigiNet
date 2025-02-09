@@ -27,12 +27,6 @@ export default function RegisterScreen({ navigation }) {
       return;
     }
 
-    // Validar que el email contenga un "@"
-    if (!email.includes("@")) {
-      setErrorMessage("El correo electrónico debe contener un '@'.");
-      return;
-    }
-
     if (existingEmails.includes(email)) {
       setErrorMessage("El correo electrónico ya está registrado.");
       return;
