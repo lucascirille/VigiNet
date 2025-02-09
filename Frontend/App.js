@@ -3,6 +3,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { AuthProvider, useAuth } from "./src/context/AuthContext";
 import AuthStack from "./src/navigation/AuthStack";
 import MainTabNavigator from "./src/navigation/MainTabNavigator";
+import { NotificationProvider } from "./src/context/NotificationContext";
 
 function AppContent() {
   const { authData } = useAuth();
@@ -18,7 +19,9 @@ function AppContent() {
 export default function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <NotificationProvider>
+        <AppContent />
+      </NotificationProvider >
     </AuthProvider>
   );
 }

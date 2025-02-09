@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react"
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ActivityIndicator } from "react-native"
 import axios from "axios"
+import { useNotification } from './../context/NotificationContext';
+import { Pressable } from "react-native-web";
 
 const BASE_URL = "http://localhost:3000/api"
 const VERIFY_TOKEN_API = `${BASE_URL}/auth/validate-token`
@@ -15,6 +17,15 @@ export default function ProfileScreen({ navigation }) {
   const [userData, setUserData] = useState(null)
   const [neighborhoodName, setNeighborhoodName] = useState(null)
   const [loading, setLoading] = useState(true)
+
+  const { showNotification } = useNotification();
+
+  const handleAlgo = () => {
+    showNotification(
+      "Título de la notificación",
+      "Mensaje de la notificación"
+    );
+  };
 
   useEffect(() => {
     fetchUserData()
@@ -99,6 +110,12 @@ export default function ProfileScreen({ navigation }) {
 
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutText}>Cerrar Sesión</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        title="Mostrar Notificación"
+        onPress={handleAlgo}
+      >
+        <Text>Mostrar Notificación</Text>
       </TouchableOpacity>
     </ScrollView>
   )
