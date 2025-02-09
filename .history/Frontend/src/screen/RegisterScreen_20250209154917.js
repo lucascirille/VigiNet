@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
-import axios from "axios";
+import axios from "axios";  // O puedes usar fetch
 
 export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState("");
-  const [existingEmails, setExistingEmails] = useState([]);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [existingEmails, setExistingEmails] = useState([]); // Para almacenar los correos existentes
+  const [errorMessage, setErrorMessage] = useState(""); // Estado para el mensaje de error
 
   useEffect(() => {
+    // Obtener todos los correos electrónicos existentes de la API cuando la pantalla se cargue
     const fetchEmails = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/usuarios");
-        const emails = response.data.map(user => user.email);
+        const response = await axios.get("http://localhost:3000/api/usuarios"); // Reemplaza con la URL de tu API
+        const emails = response.data.map(user => user.email); // Suponiendo que la respuesta tiene una propiedad 'email'
         setExistingEmails(emails);
       } catch (error) {
         console.error("Error al obtener correos", error);
@@ -27,19 +28,15 @@ export default function RegisterScreen({ navigation }) {
       return;
     }
 
-    // Validar que el email contenga un "@"
-    if (!email.includes("@")) {
-      setErrorMessage("El correo electrónico debe contener un '@'.");
-      return;
-    }
-
+    // Verificar si el correo ya existe en la lista
     if (existingEmails.includes(email)) {
       setErrorMessage("El correo electrónico ya está registrado.");
       return;
     }
 
+    // Navegar a la siguiente pantalla con el email
     navigation.navigate("RegisterDetails", { email });
-    setErrorMessage("");
+    setErrorMessage(""); // Limpiar el mensaje de error al navegar
   };
 
   return (
@@ -59,6 +56,7 @@ export default function RegisterScreen({ navigation }) {
         <Text style={styles.buttonText}>Registrarse</Text>
       </TouchableOpacity>
       
+      {/* Mostrar el mensaje de error solo si hay un mensaje */}
       {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
 
       <Text style={styles.disclaimer}>
@@ -75,5 +73,5 @@ const styles = StyleSheet.create({
   button: { backgroundColor: "#000", paddingVertical: 10, borderRadius: 5, alignItems: "center" },
   buttonText: { color: "#FFF", fontSize: 16 },
   disclaimer: { fontSize: 12, color: "#777", textAlign: "center", marginTop: 20 },
-  errorMessage: { color: "red", fontSize: 14, marginTop: 10, textAlign: "center" },
+  errorMessage: { color: "red", fontSize: 14, marginTop: 10, textAlign: "center" }, // Estilo para el mensaje de error
 });

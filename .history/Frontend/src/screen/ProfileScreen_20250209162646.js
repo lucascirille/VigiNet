@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Modal } from "react-native"
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Alert } from "react-native"
 import axios from "axios"
-import { useAuth } from "../context/AuthContext"
+import { useAuth } from "../context/AuthContext" // Importar el contexto
 
 const BASE_URL = "http://localhost:3000/api"
 const VERIFY_TOKEN_API = `${BASE_URL}/auth/validate-token`
@@ -13,11 +13,10 @@ const NEIGHBORHOOD_API = `${BASE_URL}/vecindarios`
 axios.defaults.baseURL = BASE_URL
 
 export default function ProfileScreen({ navigation }) {
-  const { logout } = useAuth()
+  const { logout } = useAuth() 
   const [userData, setUserData] = useState(null)
   const [neighborhoodName, setNeighborhoodName] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false) // Estado para el modal
 
   useEffect(() => {
     fetchUserData()
@@ -61,8 +60,27 @@ export default function ProfileScreen({ navigation }) {
     }
   }
 
+  // Función de cerrar sesión con confirmación
   const handleLogout = () => {
-    setIsLogoutModalVisible(true) // Mostrar el modal de confirmación
+    Alert.alert(
+      "Cerrar Sesión", // Título del cuadro de diálogo
+      "¿Estás seguro de que quieres cerrar sesión?", // Mensaje de confirmación
+      [
+        {
+          text: "Cancelar", // Botón para cancelar
+          style: "cancel", // Estilo del botón
+        },
+        {
+          text: "Cerrar Sesión", // Botón para confirmar
+          onPress: () => {
+            logout() // Ejecuta la función de cierre de sesión
+            navigation.navigate("Splash")
+            
+          },
+          style: "destructive", // Estilo del botón (destructivo)
+        },
+      ]
+    )
   }
 
   if (loading) {
@@ -77,7 +95,7 @@ export default function ProfileScreen({ navigation }) {
     <ScrollView contentContainerStyle={styles.container}>
       {userData &&
         Object.entries(userData)
-          .filter(([key]) => key.toLowerCase() !== "vecindarioid" && key.toLowerCase() !== "usuarioid")
+          .filter(([key]) => key.toLowerCase() !== "vecindarioid" && key.toLowerCase() !== "usuarioid") // Ocultar el ID
           .map(([key, value], index) => (
             <View key={index} style={styles.infoContainer}>
               <Text style={styles.infoLabel}>{key}</Text>
@@ -100,38 +118,6 @@ export default function ProfileScreen({ navigation }) {
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutText}>Cerrar Sesión</Text>
       </TouchableOpacity>
-
-      {/* Modal de confirmación */}
-      <Modal
-        visible={isLogoutModalVisible}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setIsLogoutModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Cerrar Sesión</Text>
-            <Text style={styles.modalMessage}>¿Estás seguro de que quieres cerrar sesión?</Text>
-            <View style={styles.modalButtonsContainer}>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.cancelButton]}
-                onPress={() => setIsLogoutModalVisible(false)}
-              >
-                <Text style={styles.modalButtonText}>Cancelar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.confirmButton]}
-                onPress={() => {
-                  logout();
-                  navigation.navigate("Login");
-                }}
-              >
-                <Text style={styles.modalButtonText}>Cerrar Sesión</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
     </ScrollView>
   )
 }
@@ -151,45 +137,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   logoutText: { color: "white", fontSize: 20, textAlign: "center" },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContent: {
-    width: "80%",
-    backgroundColor: "white",
-    borderRadius: 10,
-    padding: 20,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  modalMessage: {
-    fontSize: 16,
-    marginBottom: 20,
-  },
-  modalButtonsContainer: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-  },
-  modalButton: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 5,
-    marginLeft: 10,
-  },
-  cancelButton: {
-    backgroundColor: "#ccc",
-  },
-  confirmButton: {
-    backgroundColor: "teal",
-  },
-  modalButtonText: {
-    color: "white",
-    fontSize: 16,
-  },
 })

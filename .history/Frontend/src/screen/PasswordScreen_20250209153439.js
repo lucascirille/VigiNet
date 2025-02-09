@@ -7,36 +7,34 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-import { useAuth } from "../context/AuthContext";
-import Icon from "react-native-vector-icons/Feather";
+import { useAuth } from "../context/AuthContext"; // Importa el contexto
+import Icon from "react-native-vector-icons/Feather"; // Importa el ícono
 
 export default function PasswordScreen({ navigation }) {
-  const { authData, loginUser } = useAuth();
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [secureText, setSecureText] = useState(true);
-  const [errorMessage, setErrorMessage] = useState("");
+  const { authData, loginUser } = useAuth(); // Accede al contexto
+  const [password, setPassword] = useState(""); // Estado para la contraseña
+  const [loading, setLoading] = useState(false); // Estado para la carga
+  const [secureText, setSecureText] = useState(true); // Estado para mostrar/ocultar la contraseña
 
   const handleLogin = async () => {
     if (!authData.email || !password) {
-      setErrorMessage("Por favor, complete todos los campos.");
+      Alert.alert("Error", "Por favor, complete todos los campos.");
       return;
     }
 
-    setLoading(true);
-    setErrorMessage("");
+    setLoading(true); // Indicamos que está cargando
 
     try {
-      let auth = await loginUser(authData.email, password); 
+      let auth = await loginUser(authData.email, password); // Llama a la función del contexto para hacer el login
       if (auth) {
         Alert.alert("Éxito", "Inicio de sesión exitoso.");
       } else {
-        setErrorMessage("Correo electronico o contraseña no válido.");
+        Alert.alert("Error", "Credenciales incorrectas.");
       }
     } catch (error) {
-      setErrorMessage("Hubo un error al iniciar sesión.");
+      Alert.alert("Error", "Hubo un error al iniciar sesión.");
     } finally {
-      setLoading(false); 
+      setLoading(false); // Termina la carga
     }
   };
 
@@ -47,7 +45,7 @@ export default function PasswordScreen({ navigation }) {
         <TextInput
           style={styles.input}
           placeholder="Contraseña"
-          secureTextEntry={secureText}
+          secureTextEntry={secureText} // Controla si la contraseña está oculta o visible
           onChangeText={setPassword}
           value={password}
         />
@@ -55,11 +53,10 @@ export default function PasswordScreen({ navigation }) {
           <Icon name={secureText ? "eye" : "eye-off"} size={24} color="#000" />
         </TouchableOpacity>
       </View>
-      {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
       <TouchableOpacity
         style={styles.button}
         onPress={handleLogin}
-        disabled={loading}
+        disabled={loading} // Deshabilita el botón mientras carga
       >
         <Text style={styles.buttonText}>
           {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
@@ -71,7 +68,7 @@ export default function PasswordScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: "center", padding: 20 },
-  label: { fontSize: 16, marginBottom: 20 },
+  label: { fontSize: 16, marginBottom: 10 },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -89,10 +86,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonText: { color: "#FFF", fontSize: 16 },
-  errorText: {
-    color: "red",
-    fontSize: 14,
-    marginTop: 20,
-    marginBottom: 20,
-  },
 });

@@ -27,16 +27,16 @@ export default function PasswordScreen({ navigation }) {
     setErrorMessage("");
 
     try {
-      let auth = await loginUser(authData.email, password); 
+      let auth = await loginUser(authData.email, password);
       if (auth) {
         Alert.alert("Éxito", "Inicio de sesión exitoso.");
       } else {
-        setErrorMessage("Correo electronico o contraseña no válido.");
+        setErrorMessage("Su correo electrónico o contraseña no son válidos.");
       }
     } catch (error) {
       setErrorMessage("Hubo un error al iniciar sesión.");
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   };
 
@@ -71,7 +71,7 @@ export default function PasswordScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: "center", padding: 20 },
-  label: { fontSize: 16, marginBottom: 20 },
+  label: { fontSize: 16, marginBottom: 10 },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   errorText: {
     color: "red",
     fontSize: 14,
-    marginTop: 20,
+    marginTop: 10,
     marginBottom: 20,
   },
 });

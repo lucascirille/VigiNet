@@ -3,7 +3,8 @@
     "dev": "node --watch init.mjs"
   },
   "dependencies": {
-    "@prisma/client": "^6.3.1",
+    "@prisma/client": "6.3.1",
+    "@react-native-async-storage/async-storage": "^2.1.1",
     "axios": "^1.7.7",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -15,6 +16,6 @@
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
-    "prisma": "^5.22.0"
+    "prisma": "6.3.1"
   }
 }

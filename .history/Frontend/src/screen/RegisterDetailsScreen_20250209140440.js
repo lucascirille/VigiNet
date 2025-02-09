@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -15,11 +16,8 @@ import {
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
-import { FontAwesome } from "@expo/vector-icons"; // Asegúrate de tener este paquete instalado
-
 const { width } = Dimensions.get("window");
-const BASE_URL = "http://localhost:3000/api"; // Asegúrate de usar la IP de tu backend
-
+const BASE_URL = "http://localhost:3000/api"; // Asegurate de usar la IP de tu backend
 export default function RegisterDetailsScreen({ navigation, route }) {
   const { email } = route.params;
   const [vecindarios, setVecindarios] = useState([]);
@@ -27,16 +25,11 @@ export default function RegisterDetailsScreen({ navigation, route }) {
     nombre: "",
     apellido: "",
     contrasena: "",
-    confirmarContrasena: "",
     direccion: "",
     telefono: "",
     vecindarioId: "",
   });
-  const [showPassword, setShowPassword] = useState(false); // Para la visibilidad de la contraseña
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Para la visibilidad de la confirmación de contraseña
   const [showPicker, setShowPicker] = useState(false);
-  const [error, setError] = useState(""); // Para el mensaje de error
-
   useEffect(() => {
     const fetchVecindarios = () => {
       const barrios = [
@@ -54,36 +47,17 @@ export default function RegisterDetailsScreen({ navigation, route }) {
     };
     fetchVecindarios();
   }, []);
-
   const handleLoad = (field, value) => {
     setFormData((prevData) => ({
       ...prevData,
       [field]: value,
     }));
   };
-
   const handleRegister = async () => {
-    // Verificación de que todas las contraseñas coincidan
-    if (formData.contrasena !== formData.confirmarContrasena) {
-      setError("Las contraseñas no coinciden.");
-      return;
-    }
-
-    // Verificar que la contraseña cumpla con los requisitos
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d@$!%*?&]{8,}$/;
-    if (!passwordRegex.test(formData.contrasena)) {
-      setError("La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula y un número.");
-      return;
-    }
-
-    // Limpiar errores previos
-    setError("");
-
     if (
       !formData.nombre ||
       !formData.apellido ||
       !formData.contrasena ||
-      !formData.confirmarContrasena ||
       !formData.direccion ||
       !formData.telefono ||
       !formData.vecindarioId
@@ -91,7 +65,6 @@ export default function RegisterDetailsScreen({ navigation, route }) {
       Alert.alert("Error", "Por favor, complete todos los campos.");
       return;
     }
-
     const usuario = {
       ...formData,
       email,
@@ -108,7 +81,6 @@ export default function RegisterDetailsScreen({ navigation, route }) {
       Alert.alert("Error", error.response?.data?.message || "No se pudo registrar el usuario.");
     }
   };
-
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
@@ -128,36 +100,13 @@ export default function RegisterDetailsScreen({ navigation, route }) {
           value={formData.apellido}
           onChangeText={(value) => handleLoad("apellido", value)}
         />
-        <View style={styles.passwordContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Contraseña"
-            secureTextEntry={!showPassword}
-            value={formData.contrasena}
-            onChangeText={(value) => handleLoad("contrasena", value)}
-          />
-          <TouchableOpacity
-            style={styles.eyeIcon}
-            onPress={() => setShowPassword(!showPassword)}
-          >
-            <FontAwesome name={showPassword ? "eye-slash" : "eye"} size={24} color="#000" />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.passwordContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Confirmar Contraseña"
-            secureTextEntry={!showConfirmPassword}
-            value={formData.confirmarContrasena}
-            onChangeText={(value) => handleLoad("confirmarContrasena", value)}
-          />
-          <TouchableOpacity
-            style={styles.eyeIcon}
-            onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-          >
-            <FontAwesome name={showConfirmPassword ? "eye-slash" : "eye"} size={24} color="#000" />
-          </TouchableOpacity>
-        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="Contraseña"
+          secureTextEntry
+          value={formData.contrasena}
+          onChangeText={(value) => handleLoad("contrasena", value)}
+        />
         <TextInput
           style={styles.input}
           placeholder="Dirección"
@@ -202,7 +151,6 @@ export default function RegisterDetailsScreen({ navigation, route }) {
             </Picker>
           </View>
         </Modal>
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
           <Text style={styles.buttonText}>Registrarse</Text>
         </TouchableOpacity>
@@ -210,7 +158,6 @@ export default function RegisterDetailsScreen({ navigation, route }) {
     </KeyboardAvoidingView>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
@@ -234,17 +181,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 15,
     width: width * 0.85,
-  },
-  passwordContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: width * 0.85,
-    marginBottom: 15,
-  },
-  eyeIcon: {
-    position: "absolute",
-    right: 10,
   },
   pickerContainer: {
     width: width * 0.85,
@@ -281,10 +217,5 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10,
   },
-  errorText: {
-    color: "red",
-    fontSize: 14,
-    marginBottom: 10,
-    textAlign: "center",
-  },
 });
+
