@@ -82,28 +82,19 @@ export default function AlertScreen() {
       Alert.alert("Error", "No perteneces a ning煤n vecindario");
       return;
     }
-    showNotification("Alerta Activada", `Has activado la alerta de: ${alertLabel}`);
-    try {
-      const response = await axios.post(`${BASE_URL}/alarmas/activar`, {
-        descripcion: `Alerta de ${alertType.label}`,
-        tipo: alertType.label,
-      });
+    showNotification("Alerta Activada", `Has activado la alerta de: ${alertType.label}`);
 
-      // Mostrar notificaci贸n local
-      showNotification("Alarma Activada", `Has activado una alerta de ${alertType.label}`);
 
-      // Emitir evento de socket
-      socket.emit("nuevaAlarma", {
-        vecindarioId: `vecindario_${userData.vecindarioId}`,
-        alarma: response.data.alarma
-      });
+    // Emitir evento de socket
+    socket.emit('enviarNotificacion', {
+      sala: userData.vecindarioId,
+      mensaje: '隆Alerta de asalto en la calle 123!'
+    });
 
 
 
-    } catch (error) {
-      console.error("Error activating alarm:", error);
-      Alert.alert("Error", "No se pudo activar la alarma");
-    }
+    console.error("Error activating alarm:", error);
+    Alert.alert("Error", "No se pudo activar la alarma");
   };
 
   const handleWsp = () => {
