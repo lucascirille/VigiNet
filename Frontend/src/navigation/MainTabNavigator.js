@@ -1,11 +1,11 @@
-import React from "react";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Ionicons } from "@expo/vector-icons";
-import AlertScreen from "../screen/AlertScreen";
-import ProfileScreen from "../screen/ProfileScreen";
-import { THEME } from "../theme/theme";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
+import { Ionicons } from "@expo/vector-icons"
+import AlertScreen from "../screen/AlertScreen"
+import ProfileScreen from "../screen/ProfileScreen"
+import HistoryScreen from "../screen/HistoryScreen"
+import { THEME } from "../theme/theme"
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator()
 
 export default function MainTabNavigator() {
   return (
@@ -17,10 +17,9 @@ export default function MainTabNavigator() {
             Alertas: "alert-circle",
             Estadísticas: "bar-chart",
             Perfil: "person-circle",
-          };
-          return (
-            <Ionicons name={icons[route.name]} size={size} color={color} />
-          );
+            Historial: "time-outline",
+          }
+          return <Ionicons name={icons[route.name]} size={size} color={color} />
         },
         tabBarActiveTintColor: THEME.colors.primary,
         tabBarInactiveTintColor: THEME.colors.inactive,
@@ -35,7 +34,9 @@ export default function MainTabNavigator() {
       })}
     >
       <Tab.Screen name="Alertas" component={AlertScreen} />
+      <Tab.Screen name="Historial" component={HistoryScreen} />
       <Tab.Screen name="Perfil" component={ProfileScreen} />
     </Tab.Navigator>
-  );
+  )
 }
+
