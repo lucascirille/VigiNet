@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 // Activar una alarma y notificar a los usuarios del mismo vecindario
 export const activarAlarma = async (usuarioId, descripcion, tipo) => {
-   
+
     const usuario = await prisma.usuario.findUnique({
         where: { usuarioid: usuarioId },
         select: { vecindarioid: true },
@@ -17,11 +17,10 @@ export const activarAlarma = async (usuarioId, descripcion, tipo) => {
             tipo,
             activo: true,
             usuarioid: usuarioId,
-            fechaHora: new Date(),
         },
     });
 
-  
+
     const usuariosDelVecindario = await prisma.usuario.findMany({
         where: { vecindarioid: usuario.vecindarioid },
         select: { usuarioid: true },

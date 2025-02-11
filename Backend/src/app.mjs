@@ -6,11 +6,9 @@ import usuarioRoutes from "./routes/usuarioRoutes.mjs";
 import notificacionRoutes from "./routes/notificacionRoutes.mjs";
 import enumGeoNamesRoutes from "./routes/enumGeoNamesRoutes.mjs";
 import authRoutes from "./routes/authRoutes.mjs"; // Importa las rutas de autenticación
-import { verifyGeoDB } from "./helpers/verifyGeoDB.mjs";
 import morgan from "morgan";
 import cors from "cors";
 import globalErrorHandler from "./middleware/globalErrorHandler.mjs";
-import { cargarEnumerativa } from "./helpers/loadGeoNamesData.mjs";
 
 const app = express();
 
