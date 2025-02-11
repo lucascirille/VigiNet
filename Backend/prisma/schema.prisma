@@ -66,7 +66,6 @@ model Usuario {
 
 model Alarma {
   alarmaId       Int       @id @default(autoincrement())
-  descripcion    String
   activo         Boolean   @default(true)
   fechaHora      DateTime  @default(now())
   tipo           String

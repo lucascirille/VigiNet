@@ -12,8 +12,8 @@ import { Ionicons } from "@expo/vector-icons";
 import { useNotification } from "../context/NotificationContext";
 import axios from "axios";
 import socket from "../utils/socket";
-import BookingBanner from "../components/Notification";
 import { useAuth } from "../context/AuthContext";
+import { setAlarma } from "../service/AlarmaService";
 
 const BASE_URL = "http://localhost:3000/api";
 const VERIFY_TOKEN_API = `${BASE_URL}/auth/validate-token`;
@@ -27,7 +27,7 @@ export default function AlertScreen() {
     const fetchUserData = async () => {
       try {
         const token = localStorage.getItem("userToken") || authData.token;
-        console.log('馃攽 Token:', token);
+        console.log('Token:', token);
         const userId = localStorage.getItem("userId");
 
         if (!token) {
@@ -40,9 +40,6 @@ export default function AlertScreen() {
           localStorage.setItem("userId", userId)
         }
 
-
-
-
         axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
         const { data: user } = await axios.get(`${BASE_URL}/usuarios/${userId}`);
         setUserData(user);
@@ -54,14 +51,14 @@ export default function AlertScreen() {
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
-        Alert.alert("Error", "No se pudo cargar la informaci贸n del usuario");
+        Alert.alert("Error", "No se pudo cargar la información del usuario");
       }
     };
 
     fetchUserData();
 
     socket.on('notificacion', mensaje => {
-      console.log('馃敂 Notificaci贸n recibida:', mensaje);
+      console.log('Notificación recibida:', mensaje);
       showNotification("Alerta Activada", `Has activado la alerta de: ${mensaje}`);
     });
 
@@ -79,11 +76,9 @@ export default function AlertScreen() {
 
   const handleAlertPress = async (alertType) => {
     if (!userData?.vecindarioId) {
-      Alert.alert("Error", "No perteneces a ning煤n vecindario");
+      Alert.alert("Error", "No perteneces a ningún vecindario");
       return;
     }
-    //showNotification("Alerta Activada", `Has activado la alerta de: ${alertType.label}`);
-
 
     // Emitir evento de socket
     socket.emit('enviarNotificacion', {
@@ -91,19 +86,11 @@ export default function AlertScreen() {
       mensaje: `Has activado la alerta de: ${alertType.label}`
     });
 
+    const userId = localStorage.getItem("userId");
+    setAlarma({ tipo: alertType.label, usuarioId: userId });
 
 
-    console.error("Error activating alarm:", error);
-    Alert.alert("Error", "No se pudo activar la alarma");
   };
-
-  const handleWsp = () => {
-    socket.emit('enviarNotificacion', {
-      sala: userData.vecindarioId,
-      mensaje: '隆Alerta de asalto en la calle 123!'
-    });
-    console.log(`馃摙 Notificaci贸n enviada a la sala ${userData.vecindarioId}`);
-  }
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -126,10 +113,6 @@ export default function AlertScreen() {
         >
           <Text style={styles.emergencyText}>Emergencia</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.whatsappButton} onPress={handleWsp}>
-          <Ionicons name="logo-whatsapp" size={24} color="white" />
-        </TouchableOpacity>
-        <BookingBanner />
       </View>
     </ScrollView>
   );
@@ -142,11 +125,9 @@ const alertTypes = [
   { label: "Incendio", icon: "flame", color: "#e67e22" },
   { label: "Accidente", icon: "car-sport", color: "#3498db" },
   { label: "Asalto", icon: "shield-checkmark", color: "#9b59b6" },
-  { label: "Inundaci贸n", icon: "water", color: "#2980b9" },
+  { label: "Inundación", icon: "water", color: "#2980b9" },
   { label: "Sospechoso", icon: "eye", color: "#34495e" },
 ];
-
-
 
 const styles = StyleSheet.create({
   container: { flex: 1, alignItems: "center", padding: 16 },
@@ -187,12 +168,5 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     textAlign: "center",
-  },
-  whatsappButton: {
-    backgroundColor: "green",
-    padding: 15,
-    borderRadius: 30,
-    marginLeft: 10,
-    alignItems: "center",
   },
 });
