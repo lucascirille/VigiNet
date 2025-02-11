@@ -51,15 +51,14 @@ export const getAlarmaById = async (id) => {
 
 // Crear una nueva alarma
 export const createAlarma = async (data) => {
-    const { descripcion, activo, fechaHora, tipo, usuarioId } = data;
+    const { activo, fechaHora, tipo, usuarioId } = data;
 
-    if (!descripcion || !tipo || !usuarioId) {
-        throw new Error("Todos los campos (descripcion, tipo, usuarioId) son obligatorios");
+    if (!tipo || !usuarioId) {
+        throw new Error("Todos los campos (tipo, usuarioId) son obligatorios");
     }
 
     return await prisma.alarma.create({
         data: {
-            descripcion,
             activo: activo !== undefined ? activo : true,
             fechaHora: fechaHora ? new Date(fechaHora) : new Date(),
             tipo,
