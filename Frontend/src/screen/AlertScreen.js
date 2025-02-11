@@ -83,7 +83,7 @@ export default function AlertScreen() {
     // Emitir evento de socket
     socket.emit('enviarNotificacion', {
       sala: userData.vecindarioId,
-      mensaje: `Has activado la alerta de: ${alertType.label}`
+      mensaje: ` ${alertType.label}`
     });
 
     const userId = localStorage.getItem("userId");
