@@ -62,7 +62,7 @@ export default function AlertScreen() {
 
     socket.on('notificacion', mensaje => {
       console.log('馃敂 Notificaci贸n recibida:', mensaje);
-      showNotification("Alarma Activada", `Alguien a activado una alarma en tu vecindario`);
+      showNotification("Alerta Activada", `Has activado la alerta de: ${mensaje}`);
     });
 
     return () => {
@@ -82,13 +82,13 @@ export default function AlertScreen() {
       Alert.alert("Error", "No perteneces a ning煤n vecindario");
       return;
     }
-    showNotification("Alerta Activada", `Has activado la alerta de: ${alertType.label}`);
+    //showNotification("Alerta Activada", `Has activado la alerta de: ${alertType.label}`);
 
 
     // Emitir evento de socket
     socket.emit('enviarNotificacion', {
       sala: userData.vecindarioId,
-      mensaje: '隆Alerta de asalto en la calle 123!'
+      mensaje: `Has activado la alerta de: ${alertType.label}`
     });
 
 
