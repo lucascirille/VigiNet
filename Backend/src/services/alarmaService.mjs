@@ -1,5 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 
+const prisma = new PrismaClient();
+
 // Activar una alarma y notificar a los usuarios del mismo vecindario
 export const activarAlarma = async (usuarioId, descripcion, tipo) => {
 
@@ -62,7 +64,7 @@ export const createAlarma = async (data) => {
             fechaHora: fechaHora ? new Date(fechaHora) : new Date(),
             tipo,
             usuario: {
-                connect: { usuarioid: parseInt(usuarioId) },
+                connect: { usuarioId: parseInt(usuarioId) },
             },
         },
     });
