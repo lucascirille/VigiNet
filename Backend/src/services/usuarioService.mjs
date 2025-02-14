@@ -26,7 +26,8 @@ export const createUsuario = async (data) => {
     // Validación de datos con Zod
     registerSchema.parse(data);
 
-    const { nombre, email, apellido, contrasena, direccion, telefono, vecindarioId } = data;
+    const { nombre, email, apellido, contrasena, direccion, telefono, vecindarioId, calle1, calle2, depto, piso } = data;
+    // const { nombre, email, apellido, contrasena, direccion, telefono, vecindarioId } = data; #aca agregue calle1, calle2, depto, piso
 
     // Verificación de existencia de email
     const existingUser = await prisma.usuario.findUnique({ where: { email } });
@@ -47,6 +48,10 @@ export const createUsuario = async (data) => {
             direccion,
             telefono,
             vecindarioId: parseInt(vecindarioId),
+            calle1,
+            calle2,
+            depto,
+            piso,
         },
     });
 };
