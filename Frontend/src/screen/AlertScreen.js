@@ -258,7 +258,7 @@ export default function AlertScreen() {
 
       const currentLocation = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.High,
-        locationProvider: Location.LocationProvider.GPS,
+        
       });
       setLocation(currentLocation.coords);
     };
