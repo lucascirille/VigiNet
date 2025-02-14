@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, Platform } from "react-native";
+import { useIsFocused } from "@react-navigation/native";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 
@@ -10,12 +11,10 @@ const formatDate = (dateString) => {
   try {
     const date = new Date(dateString);
     
-    // Verificar si la fecha es válida
     if (isNaN(date.getTime())) {
       return "Fecha no disponible";
     }
 
-    // Formatear la fecha al español
     return date.toLocaleString('es-ES', {
       year: 'numeric',
       month: 'long',
@@ -35,10 +34,13 @@ export default function HistoryScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { authData } = useAuth();
+  const isFocused = useIsFocused();
 
   useEffect(() => {
-    fetchAlerts();
-  }, []);
+    if (isFocused) {
+      fetchAlerts();
+    }
+  }, [isFocused]);
 
   const fetchAlerts = async () => {
     try {
@@ -58,9 +60,16 @@ export default function HistoryScreen() {
         }
       });
       
-      // Asegurarse de que response.data es un array
       const alertsData = Array.isArray(response.data) ? response.data : [];
-      setAlerts(alertsData);
+      
+      // Ordenar las alertas por fecha en orden descendente
+      const sortedAlerts = alertsData.sort((a, b) => {
+        const dateA = new Date(a.fechaHora);
+        const dateB = new Date(b.fechaHora);
+        return dateB - dateA;
+      });
+      
+      setAlerts(sortedAlerts);
     } catch (error) {
       console.error("Error fetching alerts:", error);
       setError(error.response?.data?.message || "Error al cargar las alertas");
