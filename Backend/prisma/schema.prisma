@@ -58,10 +58,15 @@ model Usuario {
   contrasena     String
   telefono       String
   direccion      String
+  calle1         String?         // New field
+  calle2         String?         // New field
+  piso           String?         // New field
+  depto          String?         // New field
   vecindarioId   Int
   vecindario     Vecindario      @relation(fields: [vecindarioId], references: [vecindarioId])
   notificaciones Notificacion[]
   alarmas        Alarma[]
+  ubicaciones    Ubicacion[]     // Relation to Ubicacion (renamed from Location)
 }
 
 model Alarma {
@@ -71,4 +76,16 @@ model Alarma {
   tipo           String
   usuarioId      Int
   usuario        Usuario   @relation(fields: [usuarioId], references: [usuarioId])
+  ubicaciones    Ubicacion[] // Relation to Ubicacion (renamed from Location)
+}
+
+model Ubicacion {
+  ubicacionId    Int       @id @default(autoincrement())
+  latitud        Float
+  longitud       Float
+  fechaHora      DateTime  @default(now())
+  usuarioId      Int
+  usuario        Usuario   @relation(fields: [usuarioId], references: [usuarioId])
+  alarmaId       Int
+  alarma         Alarma    @relation(fields: [alarmaId], references: [alarmaId])
 }
