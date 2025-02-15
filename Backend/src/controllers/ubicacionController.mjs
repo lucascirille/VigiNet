@@ -1,4 +1,5 @@
 import { saveUserLocation } from "../services/ubicacionService.mjs";
+import { getAlertsWithLocations } from "../services/ubicacionService.mjs";
 
 export const handleUserLocation = async (req, res) => {
   try {
@@ -12,5 +13,16 @@ export const handleUserLocation = async (req, res) => {
     return res.status(201).json({ message: "Location saved", ubicacion });
   } catch (error) {
     return res.status(500).json({ error: error.message });
+  }
+};
+
+
+export const getAllAlerts = async (req, res) => {
+  try {
+    const alerts = await getAlertsWithLocations();
+    return res.status(200).json(alerts);
+  } catch (error) {
+    console.error("Error fetching alerts:", error);
+    return res.status(500).json({ error: "Could not fetch alerts" });
   }
 };
