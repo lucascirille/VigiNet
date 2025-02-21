@@ -12,7 +12,7 @@ export const activarAlarma = catchAsync(async (req, res, io) => {
   try {
     const { alarma, usuariosDelVecindario } = await alarmaService.activarAlarma(usuarioId, descripcion, tipo);
 
-   
+  
     if (usuariosDelVecindario && usuariosDelVecindario.length > 0) {
       usuariosDelVecindario.forEach((usuario) => {
         if (usuario.usuarioid !== usuarioId) {  // No enviar al emisor

@@ -31,6 +31,10 @@ export default function RegisterDetailsScreen({ navigation, route }) {
     direccion: "",
     telefono: "",
     vecindarioId: "",
+    calle1: "",
+    calle2: "",
+    depto: "",
+    piso: "",
   });
   const [showPassword, setShowPassword] = useState(false); // Para la visibilidad de la contraseña
   const [showConfirmPassword, setShowConfirmPassword] = useState(false); // Para la visibilidad de la confirmación de contraseña
@@ -86,7 +90,11 @@ export default function RegisterDetailsScreen({ navigation, route }) {
       !formData.confirmarContrasena ||
       !formData.direccion ||
       !formData.telefono ||
-      !formData.vecindarioId
+      !formData.vecindarioId||
+      !formData.calle1 ||
+      !formData.calle2 ||
+      !formData.depto ||
+      !formData.piso
     ) {
       Alert.alert("Error", "Por favor, complete todos los campos.");
       return;
@@ -164,6 +172,30 @@ export default function RegisterDetailsScreen({ navigation, route }) {
           value={formData.direccion}
           onChangeText={(value) => handleLoad("direccion", value)}
         />
+        <TextInput 
+          style={styles.input}
+          placeholder="Calle 1"
+          value={formData.calle1}
+          onChangeText={(value) => handleLoad("calle1", value)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Calle 2"
+          value={formData.calle2}
+          onChangeText={(value) => handleLoad("calle2", value)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Piso"
+          value={formData.piso}
+          onChangeText={(value) => handleLoad("piso", value)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Depto"
+          value={formData.depto}
+          onChangeText={(value) => handleLoad("depto", value)}
+        />
         <TextInput
           style={styles.input}
           placeholder="Teléfono"
@@ -202,6 +234,7 @@ export default function RegisterDetailsScreen({ navigation, route }) {
             </Picker>
           </View>
         </Modal>
+        
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
         <TouchableOpacity style={styles.button} onPress={handleRegister}>
           <Text style={styles.buttonText}>Registrarse</Text>
