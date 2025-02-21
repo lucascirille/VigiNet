@@ -34,9 +34,18 @@ export const activarAlarma = async (usuarioId, descripcion, tipo) => {
 // Obtener todas las alarmas
 export const getAllAlarmas = async () => {
     return await prisma.alarma.findMany({
-        include: { usuario: true },
+        include: { usuario: true, 
+        ubicaciones: true,
+        },
     });
 };
+
+export const getAllAlarmasByVecindario = async (vecindarioId) => {
+    return await prisma.alarma.findMany({
+        where: { vecindarioid: vecindarioId },
+        include: { usuario: true },
+    });
+}
 
 // Obtener una alarma por ID
 export const getAlarmaById = async (id) => {

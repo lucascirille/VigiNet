@@ -9,6 +9,7 @@ import authRoutes from "./routes/authRoutes.mjs"; // Importa las rutas de autent
 import morgan from "morgan";
 import cors from "cors";
 import globalErrorHandler from "./middleware/globalErrorHandler.mjs";
+import ubicacionRoutes from "./routes/ubicacionRoutes.mjs";
 
 const app = express();
 
@@ -43,6 +44,9 @@ app.use("/api/usuarios", usuarioRoutes);
 
 // Rutas de Enumerativa
 app.use("/api/enumGeoNames", enumGeoNamesRoutes);
+
+// Rutas de ubicación
+app.use("/api/ubicaciones", ubicacionRoutes);
 
 // Middleware de manejo de errores
 app.use(globalErrorHandler);

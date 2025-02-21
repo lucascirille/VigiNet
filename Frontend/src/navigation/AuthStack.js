@@ -17,6 +17,7 @@ export default function AuthStack() {
         headerStyle: THEME.headerStyle,
         headerTitleStyle: THEME.headerTitleStyle,
         cardStyle: { backgroundColor: THEME.colors.background },
+        headerTitleAlign: "center",
       }}
     >
       <Stack.Screen
