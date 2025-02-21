@@ -1,53 +1,53 @@
 // src/services/usuarioService.mjs
-import { PrismaClient } from '@prisma/client';
+import { prismaclient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
-import { registerSchema } from '../validations/userValidations.mjs';
+import { registerschema } from '../validations/uservalidations.mjs';
 
-const prisma = new PrismaClient();
+const prisma = new prismaclient();
 
-export const getAllUsuarios = async () => {
-    return await prisma.usuario.findMany();
+export const getallusuarios = async () => {
+    return await prisma.usuario.findmany();
 };
 
-export const getUsuarioById = async (id) => {
-    return await prisma.usuario.findUnique({
-        where: { usuarioId: parseInt(id) },
+export const getusuariobyid = async (id) => {
+    return await prisma.usuario.findunique({
+        where: { usuarioid: parseint(id) },
     });
 };
 
 
-export const getUsuarioByEmail = async (email) => {
-    return await prisma.usuario.findUnique({
+export const getusuariobyemail = async (email) => {
+    return await prisma.usuario.findunique({
         where: { email },
     });
 };
 
-export const createUsuario = async (data) => {
-    // Validación de datos con Zod
-    registerSchema.parse(data);
+export const createusuario = async (data) => {
+    // validación de datos con zod
+    registerschema.parse(data);
 
-    const { nombre, email, apellido, contrasena, direccion, telefono, vecindarioId, calle1, calle2, depto, piso } = data;
-    // const { nombre, email, apellido, contrasena, direccion, telefono, vecindarioId } = data; #aca agregue calle1, calle2, depto, piso
+    const { nombre, email, apellido, contrasena, direccion, telefono, vecindarioid, calle1, calle2, depto, piso } = data;
+    // const { nombre, email, apellido, contrasena, direccion, telefono, vecindarioid } = data; #aca agregue calle1, calle2, depto, piso
 
-    // Verificación de existencia de email
-    const existingUser = await prisma.usuario.findUnique({ where: { email } });
-    if (existingUser) {
-        throw new Error('El email ya está en uso');
+    // verificación de existencia de email
+    const existinguser = await prisma.usuario.findunique({ where: { email } });
+    if (existinguser) {
+        throw new error('el email ya está en uso');
     }
 
-    // Encriptación de la contraseña
-    const hashedPassword = await bcrypt.hash(contrasena, 10);
+    // encriptación de la contraseña
+    const hashedpassword = await bcrypt.hash(contrasena, 10);
 
-    // Creación del usuario
+    // creación del usuario
     return await prisma.usuario.create({
         data: {
             nombre,
             apellido,
             email,
-            contrasena: hashedPassword,
+            contrasena: hashedpassword,
             direccion,
             telefono,
-            vecindarioId: parseInt(vecindarioId),
+            vecindarioid: parseint(vecindarioid),
             calle1,
             calle2,
             depto,
@@ -56,22 +56,22 @@ export const createUsuario = async (data) => {
     });
 };
 
-export const updateUsuario = async (id, data) => {
-    // Validación de datos con Zod (si es necesario)
-    registerSchema.partial().parse(data);  // Permite campos parciales para la actualización
+export const updateusuario = async (id, data) => {
+    // validación de datos con zod (si es necesario)
+    registerschema.partial().parse(data);  // permite campos parciales para la actualización
 
     if (data.contrasena) {
-        data.contrasena = await bcrypt.hash(data.contrasena, 10);  // Encripta la nueva contraseña si se incluye
+        data.contrasena = await bcrypt.hash(data.contrasena, 10);  // encripta la nueva contraseña si se incluye
     }
 
     return await prisma.usuario.update({
-        where: { usuarioId: parseInt(id) },
+        where: { usuarioid: parseint(id) },
         data,
     });
 };
 
-export const deleteUsuario = async (id) => {
+export const deleteusuario = async (id) => {
     return await prisma.usuario.delete({
-        where: { usuarioId: parseInt(id) },
+        where: { usuarioid: parseint(id) },
     });
 };
