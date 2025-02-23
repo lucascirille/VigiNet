@@ -18,8 +18,9 @@ app.use(express.json());
 app.use(morgan("dev"));
 app.use(
   cors({
-    origin: "http://localhost:8081",
-  }),
+    origin: ["http://localhost:8081", "http://localhost:3001"], 
+    credentials: true, // Si usas cookies o autenticación basada en sesión
+  })
 );
 
 // Ruta básica para la raíz
