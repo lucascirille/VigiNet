@@ -12,6 +12,12 @@ export const getUsuarioById = catchAsync(async (req, res) => {
   res.status(200).json(usuario);
 });
 
+export const getUsuarioActual = catchAsync(async (req, res) => {
+  const usuario = await usuarioService.getUsuarioById(req.usuarioId);
+  if (!usuario) return res.status(404).json({ message: 'Usuario no encontrado' });
+  res.status(200).json(usuario);
+});
+
 export const createUsuario = catchAsync(async (req, res) => {
   const usuario = await usuarioService.createUsuario(req.body);
   res.status(201).json(usuario);

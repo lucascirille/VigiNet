@@ -1,43 +1,75 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Pressable, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+} from "react-native";
 import { useAuth } from "../context/AuthContext";
+import Icon from "react-native-vector-icons/Feather"; 
 
 export default function LoginScreen({ navigation }) {
-  const { setAuthData } = useAuth(); // Accede a la función para actualizar el contexto
-  const [email, setEmail] = useState(""); // Estado local para almacenar el email
-  const [error, setError] = useState(""); // Estado para manejar el mensaje de error
+  const { setAuthData, loginUser } = useAuth();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [secureText, setSecureText] = useState(true);
 
   const validateEmail = (email) => {
-    // Expresión regular para validar el formato del correo electrónico
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
   };
 
-  const handleEmailSubmit = () => {
+  const handleLogin = async () => {
+    setError(""); 
+
     if (!email) {
       setError("Por favor, ingresa tu correo electrónico.");
       return;
     }
-
     if (!validateEmail(email)) {
       setError("Por favor, ingresa un correo electrónico válido.");
       return;
     }
 
-    setError(""); // Limpia el mensaje de error si el correo es válido
-    setAuthData((prev) => ({ ...prev, email })); // Almacena el email en el contexto
-    navigation.navigate("Password"); // Navega a la pantalla de contraseña
-    console.log(email);
+    if (!password) {
+      setError("Por favor, ingresa tu contraseña.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      console.log("Iniciando proceso de login...");
+      const auth = await loginUser(email, password);
+      
+      if (auth) {
+        console.log("Login exitoso, navegando...");
+        
+      } else {
+        console.log("Login fallido");
+        setError("Correo electrónico o contraseña no válidos.");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      setError(err.message || "Hubo un error al iniciar sesión. Por favor, inténtalo de nuevo.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleRegister = () => {
-    navigation.navigate("Register");
+    navigation.navigate("Register"); 
     console.log("Estas en register");
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Ingrese su email para iniciar sesión</Text>
+      <Text style={styles.label}>Iniciar sesión</Text>
+
       <TextInput
         style={styles.input}
         placeholder="email@dominio.com"
@@ -45,13 +77,34 @@ export default function LoginScreen({ navigation }) {
         value={email}
         onChangeText={(text) => {
           setEmail(text);
-          setError(""); // Limpia el mensaje de error cuando el usuario comienza a escribir
+          setError("");
         }}
       />
+
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.passwordInput}
+          placeholder="Contraseña"
+          secureTextEntry={secureText}
+          onChangeText={(text) => {
+            setPassword(text);
+            setError("");
+          }}
+          value={password}
+        />
+        <TouchableOpacity onPress={() => setSecureText(!secureText)}>
+          <Icon name={secureText ? "eye" : "eye-off"} size={24} color="#000" />
+        </TouchableOpacity>
+      </View>
+
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
-      <Pressable style={[styles.button, styles.marginBottom]} onPress={handleEmailSubmit}>
-        <Text style={styles.buttonText}>Iniciar Sesión Con Email</Text>
+
+      <Pressable style={[styles.button, styles.marginBottom]} onPress={handleLogin} disabled={loading}>
+        <Text style={styles.buttonText}>
+          {loading ? "Iniciando sesión..." : "Iniciar Sesión"}
+        </Text>
       </Pressable>
+
       <Pressable style={[styles.button, styles.marginTop, styles.buttonRegister]} onPress={handleRegister}>
         <Text style={styles.buttonText}>Crear Cuenta</Text>
       </Pressable>
@@ -61,23 +114,37 @@ export default function LoginScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: "center", padding: 20 },
-  label: { fontSize: 16, marginBottom: 10 },
+  label: { fontSize: 20, marginBottom: 20, textAlign: "center", fontWeight: "bold" },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
     padding: 10,
     borderRadius: 5,
     marginBottom: 20,
+    fontSize: 16,
+  },
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 20,
+  },
+  passwordInput: {
+    flex: 1,
+    fontSize: 16,
   },
   button: {
     backgroundColor: "#000",
-    paddingVertical: 10,
+    paddingVertical: 12,
     borderRadius: 5,
     alignItems: "center",
   },
-  buttonText: { color: "#FFF", fontSize: 16 },
+  buttonText: { color: "#FFF", fontSize: 18, fontWeight: "bold" },
   marginBottom: { marginBottom: 20 },
   marginTop: { marginTop: 20 },
-  buttonRegister: { backgroundColor: "#007BFF" }, // Color azul para el botón de Crear Cuenta
-  errorText: { color: "red", marginBottom: 10 },
+  buttonRegister: { backgroundColor: "#007BFF" },
+  errorText: { color: "red", marginBottom: 10, textAlign: "center" },
 });

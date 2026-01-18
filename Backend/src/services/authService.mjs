@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import * as jose from 'jose'; // Cambia a 'jose'
+import * as jose from 'jose'; 
 import { getUsuarioByEmail } from './usuarioService.mjs';
 import { loginSchema } from '../validations/authValidations.mjs';
 
@@ -7,30 +7,29 @@ const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'default_s
 const TOKEN_EXPIRATION = '1h';
 
 export const loginUser = async (data) => {
-    // Validación con Zod
+    
     loginSchema.parse(data);
 
     const { email, contrasena } = data;
 
-    // Verificación de usuario
+   
     const user = await getUsuarioByEmail(email);
     if (!user) {
         throw new Error('Usuario no encontrado');
     }
 
-    // Validación de contraseña
+    
     const isPasswordValid = await bcrypt.compare(contrasena, user.contrasena);
     if (!isPasswordValid) {
         throw new Error('Credenciales incorrectas');
     }
 
-    // Generación del token usando jose
     const token = await new jose.SignJWT({ usuarioId: user.usuarioId })
-        .setProtectedHeader({ alg: 'HS256' }) // Elige el algoritmo
+        .setProtectedHeader({ alg: 'HS256' })
         .setExpirationTime(TOKEN_EXPIRATION)
-        .sign(JWT_SECRET); // Firma el token
+        .sign(JWT_SECRET); 
 
-    return { token, usuarioId: user.usuarioId };
+    return { token, user };
 };
 
 export const validateToken = async (token) => {

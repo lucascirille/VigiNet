@@ -1,13 +1,21 @@
 // src/routes/usuarioRoutes.mjs
 import express from 'express';
 import * as usuarioController from '../controllers/usuarioController.mjs';
+import { authenticateToken } from '../middleware/authMiddleware.mjs';
 
 const router = express.Router();
 
 router
 	.route('/')
-	.get(usuarioController.getAllUsuarios)
 	.post(usuarioController.createUsuario);
+
+router.use(authenticateToken);
+
+router
+	.route('/')
+	.get(usuarioController.getAllUsuarios);
+
+router.get('/me', usuarioController.getUsuarioActual);
 
 router
 	.route('/:id')
