@@ -7,19 +7,6 @@ export default function RegisterScreen({ navigation }) {
   const [existingEmails, setExistingEmails] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
 
-  useEffect(() => {
-    const fetchEmails = async () => {
-      try {
-        const response = await axios.get("http://localhost:3000/api/usuarios");
-        const emails = response.data.map(user => user.email);
-        setExistingEmails(emails);
-      } catch (error) {
-        console.error("Error al obtener correos", error);
-      }
-    };
-    
-    fetchEmails();
-  }, []);
 
   const handleRegister = () => {
     if (!email) {
@@ -27,7 +14,7 @@ export default function RegisterScreen({ navigation }) {
       return;
     }
 
-    // Validar que el email contenga un "@"
+  
     if (!email.includes("@")) {
       setErrorMessage("El correo electrónico debe contener un '@'.");
       return;

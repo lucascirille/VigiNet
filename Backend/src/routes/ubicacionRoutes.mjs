@@ -3,7 +3,7 @@ import { handleUserLocation } from "../controllers/ubicacionController.mjs";  //
 
 const router = express.Router();
 
-// Define the POST route for saving user location
-router.post("/", handleUserLocation);  // POST request to handle location
+
+router.post("/", handleUserLocation);  
 
 export default router;

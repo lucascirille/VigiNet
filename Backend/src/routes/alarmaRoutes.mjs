@@ -1,19 +1,24 @@
 import express from "express";
 import * as alarmaController from "../controllers/alarmaController.mjs";
-
+import { authenticateToken } from "../middleware/authMiddleware.mjs";
 
 const router = express.Router();
+
+
+router.get("/estadisticas/:vecindarioId", alarmaController.getEstadisticasVecindario);
+
+
+router.post("/activar", authenticateToken, alarmaController.activarAlarma);
 
 router
   .route("/")
   .get(alarmaController.getAllAlarmas)
-  .post(alarmaController.createAlarma);
+  .post(authenticateToken, alarmaController.createAlarma);
 
 router
   .route("/:id")
   .get(alarmaController.updateAlarma)
-  .delete(alarmaController.deleteAlarma);
-
+  .delete(authenticateToken, alarmaController.deleteAlarma);
 
 export default router;
 

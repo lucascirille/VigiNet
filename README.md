@@ -8,3 +8,32 @@ app.use(
     credentials: true, // Si usas cookies o autenticación basada en sesión (en app.js)
   })
 );
+
+
+para cargar la base de datos:
+```
+-- 1. Crear el País
+INSERT INTO "Pais" ("paisId", "nombre") 
+VALUES (1, 'Argentina');
+
+-- 2. Crear la Provincia (apuntando a Argentina)
+INSERT INTO "Provincia" ("provinciaId", "nombre", "paisId") 
+VALUES (1, 'Buenos Aires', 1);
+
+-- 3. Crear la Localidad (Quilmes, apuntando a Buenos Aires)
+INSERT INTO "Localidad" ("localidadId", "nombre", "provinciaId") 
+VALUES (1, 'Quilmes', 1);
+
+
+INSERT INTO "Vecindario" ("vecindarioId", "nombre", "localidadId")
+VALUES
+    (1, 'Quilmes Oeste', 1),
+    (2, 'Quilmes Centro', 1),
+    (3, 'Quilmes Este', 1),
+    (4, 'La Colonia', 1),
+    (5, 'Solano', 1),
+    (6, 'San Francisco Solano', 1),
+    (7, 'San Juan', 1),
+    (8, 'Ezpeleta', 1),
+    (9, 'Ezpeleta Oeste', 1);
+```

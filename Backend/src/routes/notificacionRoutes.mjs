@@ -1,4 +1,3 @@
-// src/routes/notificacionRoutes.mjs
 import express from 'express';
 import * as notificacionController from '../controllers/notificacionController.mjs';
 

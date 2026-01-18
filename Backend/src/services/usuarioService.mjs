@@ -1,4 +1,3 @@
-// src/services/usuarioService.mjs
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { registerSchema } from '../validations/userValidations.mjs';
@@ -23,22 +22,22 @@ export const getUsuarioByEmail = async (email) => {
 };
 
 export const createUsuario = async (data) => {
-    // Validación de datos con Zod
+   
     registerSchema.parse(data);
 
     const { nombre, email, apellido, contrasena, direccion, telefono, vecindarioId, calle1, calle2, depto, piso } = data;
-    // const { nombre, email, apellido, contrasena, direccion, telefono, vecindarioId } = data; #aca agregue calle1, calle2, depto, piso
 
-    // Verificación de existencia de email
+
+    
     const existingUser = await prisma.usuario.findUnique({ where: { email } });
     if (existingUser) {
         throw new Error('El email ya está en uso');
     }
 
-    // Encriptación de la contraseña
+    
     const hashedPassword = await bcrypt.hash(contrasena, 10);
 
-    // Creación del usuario
+    
     return await prisma.usuario.create({
         data: {
             nombre,
@@ -57,11 +56,11 @@ export const createUsuario = async (data) => {
 };
 
 export const updateUsuario = async (id, data) => {
-    // Validación de datos con Zod (si es necesario)
-    registerSchema.partial().parse(data);  // Permite campos parciales para la actualización
+    
+    registerSchema.partial().parse(data);  
 
     if (data.contrasena) {
-        data.contrasena = await bcrypt.hash(data.contrasena, 10);  // Encripta la nueva contraseña si se incluye
+        data.contrasena = await bcrypt.hash(data.contrasena, 10);  
     }
 
     return await prisma.usuario.update({

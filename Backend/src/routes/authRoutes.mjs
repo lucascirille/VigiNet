@@ -8,7 +8,7 @@ const router = express.Router();
 router.post('/login', login);
 router.post('/validate-token', validateToken);
 
-// Rutas protegidas
+
 router.get('/protected-route', authenticateToken, (req, res) => {
 	res.status(200).json({ message: 'Acceso concedido', userId: req.userId });
 });

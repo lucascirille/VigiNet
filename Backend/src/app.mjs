@@ -1,4 +1,5 @@
 // src/app.mjs
+import dotenv from 'dotenv';
 import express from "express";
 import vecindarioRoutes from "./routes/vecindarioRoutes.mjs";
 import alarmaRoutes from "./routes/alarmaRoutes.mjs";
@@ -10,16 +11,23 @@ import morgan from "morgan";
 import cors from "cors";
 import globalErrorHandler from "./middleware/globalErrorHandler.mjs";
 import ubicacionRoutes from "./routes/ubicacionRoutes.mjs";
+import historialNotificacionesRoutes from "./routes/historialNotificacionesRoutes.mjs";
 
+// Cargar variables de entorno
+dotenv.config();
 const app = express();
 
 // Middlewares
 app.use(express.json());
 app.use(morgan("dev"));
+
+// Configuración de CORS más permisiva para desarrollo
 app.use(
   cors({
-    origin: ["http://localhost:8081", "http://localhost:3001"], 
-    credentials: true, // Si usas cookies o autenticación basada en sesión
+    origin: true, // Permitir todas las conexiones en desarrollo
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
   })
 );
 
@@ -40,6 +48,9 @@ app.use("/api/alarmas", alarmaRoutes);
 // Rutas de notificaciones
 app.use("/api/notificaciones", notificacionRoutes);
 
+// Rutas de historial de notificaciones
+app.use("/api/historial", historialNotificacionesRoutes);
+
 // Rutas de Usuario
 app.use("/api/usuarios", usuarioRoutes);
 
@@ -51,9 +62,5 @@ app.use("/api/ubicaciones", ubicacionRoutes);
 
 // Middleware de manejo de errores
 app.use(globalErrorHandler);
-
-
-
-
 
 export default app;
