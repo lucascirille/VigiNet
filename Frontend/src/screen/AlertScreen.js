@@ -13,9 +13,9 @@ import { useNotification } from "../context/NotificationContext";
 import axios from "axios";
 import { connectSocket } from "../utils/socket";
 import { useAuth } from "../context/AuthContext";
-import * as Location from 'expo-location';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import BASE_URL, { USER_API } from "../config/apiConfig"; 
+import * as Location from "expo-location";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import BASE_URL, { USER_API } from "../config/apiConfig";
 
 export default function AlertScreen() {
   const [userData, setUserData] = useState(null);
@@ -24,36 +24,36 @@ export default function AlertScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [isConnected, setIsConnected] = useState(false);
 
-
   let showNotification;
   try {
     const notificationContext = useNotification();
     showNotification = notificationContext.showNotification;
   } catch (error) {
-    console.log("NotificationContext no disponible, usando función por defecto");
-    showNotification = (title, message, type = 'info') => {
+    console.log(
+      "NotificationContext no disponible, usando función por defecto",
+    );
+    showNotification = (title, message, type = "info") => {
       Alert.alert(title, message);
     };
   }
 
- 
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        const token = await AsyncStorage.getItem("userToken") || authData.token;
+        const token =
+          (await AsyncStorage.getItem("userToken")) || authData.token;
         if (!token) {
-          Alert.alert("Error", "No hay token de autenticación");
           return;
         }
 
         axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
         const { data: user } = await axios.get(`${USER_API}/me`);
         setUserData(user);
-        
+
         if (user.usuarioId) {
-            await AsyncStorage.setItem("usuarioId", user.usuarioId.toString());
+          await AsyncStorage.setItem("usuarioId", user.usuarioId.toString());
         }
-        
+
         if (user.vecindarioId && !isConnected) {
           connectSocket(user.usuarioId, user.vecindarioId);
           setIsConnected(true);
@@ -63,27 +63,35 @@ export default function AlertScreen() {
         console.log(` Usuario cargado: ${user.nombre} ${user.apellido}`);
 
         let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-          Alert.alert("Permiso Denegado", "Necesitamos tu ubicación para proceder.");
+        if (status !== "granted") {
+          Alert.alert(
+            "Permiso Denegado",
+            "Necesitamos tu ubicación para proceder.",
+          );
           return;
         }
-        const currentLocation = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
+        const currentLocation = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.High,
+        });
         setLocation(currentLocation.coords);
-        console.log(' Ubicación obtenida:', currentLocation.coords);
-
+        console.log(" Ubicación obtenida:", currentLocation.coords);
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 404) {
-            console.error("Error 404: El endpoint /me no fue encontrado o el usuario no existe en la BD.");
+          console.error(
+            "Error 404: El endpoint /me no fue encontrado o el usuario no existe en la BD.",
+          );
         } else {
-            console.error("Error fetching initial data:", error);
+          console.error("Error fetching initial data:", error);
         }
-        Alert.alert("Error", "No se pudo cargar tu información. Intenta reiniciar la app.");
+        Alert.alert(
+          "Error",
+          "No se pudo cargar tu información. Intenta reiniciar la app.",
+        );
       }
     };
 
     fetchInitialData();
   }, [authData.token]);
-
 
   const handleEmergencyCall = () => {
     Linking.openURL("tel:911").catch(() => {
@@ -98,27 +106,30 @@ export default function AlertScreen() {
     }
 
     if (!location) {
-      Alert.alert("Error", "No se pudo obtener tu ubicación. Por favor, asegúrate de tener los permisos activados.");
+      Alert.alert(
+        "Error",
+        "No se pudo obtener tu ubicación. Por favor, asegúrate de tener los permisos activados.",
+      );
       return;
     }
 
     setIsLoading(true);
     try {
-        const userId = await AsyncStorage.getItem("usuarioId");
-        if (!userId) {
-            Alert.alert("Error", "No se pudo identificar al usuario.");
-            setIsLoading(false);
-            return;
-        }
+      const userId = await AsyncStorage.getItem("usuarioId");
+      if (!userId) {
+        Alert.alert("Error", "No se pudo identificar al usuario.");
+        setIsLoading(false);
+        return;
+      }
       const emisor = `${userData.nombre} ${userData.apellido}`;
 
-      console.log(' Enviando alarma a /alarmas/activar:', {
+      console.log(" Enviando alarma a /alarmas/activar:", {
         tipo: alertType,
         usuarioId: userId,
         vecindarioId: userData.vecindarioId,
         emisor: emisor,
         latitud: location.latitude,
-        longitud: location.longitude
+        longitud: location.longitude,
       });
 
       const alarmaResponse = await axios.post(`${BASE_URL}/alarmas/activar`, {
@@ -129,25 +140,19 @@ export default function AlertScreen() {
         longitud: location.longitude,
       });
 
-      console.log('Alarma activada:', alarmaResponse.data);
+      console.log("Alarma activada:", alarmaResponse.data);
 
       showNotification(
-        ` Alarma de ${alertType}`,
+        `Alarma de ${alertType}`,
         `Alarma activada exitosamente en tu vecindario`,
-        'success'
+        "success",
       );
-      
-      Alert.alert(
-        "Alarma Enviada", 
-        `La alarma de ${alertType} ha sido enviada exitosamente a tu vecindario.`,
-        [{ text: "OK" }]
-      );
-
     } catch (error) {
-        
-        const errorMessage = error.response ? JSON.stringify(error.response.data) : error.message;
-        console.error('Error activando alarma:', errorMessage);
-        Alert.alert("Error", "No se pudo activar la alarma. Intenta nuevamente.");
+      const errorMessage = error.response
+        ? JSON.stringify(error.response.data)
+        : error.message;
+      console.error("Error activando alarma:", errorMessage);
+      Alert.alert("Error", "No se pudo activar la alarma. Intenta nuevamente.");
     } finally {
       setIsLoading(false);
     }
@@ -167,9 +172,9 @@ export default function AlertScreen() {
           <TouchableOpacity
             key={index}
             style={[
-              styles.alertButton, 
+              styles.alertButton,
               { backgroundColor: alert.color },
-              isLoading && styles.alertButtonDisabled
+              isLoading && styles.alertButtonDisabled,
             ]}
             onPress={() => handleAlertPress(alert.label)}
             disabled={isLoading}
@@ -190,7 +195,12 @@ export default function AlertScreen() {
           style={styles.emergencyButton}
           onPress={handleEmergencyCall}
         >
-          <Ionicons name="call" size={24} color="white" style={styles.emergencyIcon} />
+          <Ionicons
+            name="call"
+            size={24}
+            color="white"
+            style={styles.emergencyIcon}
+          />
           <Text style={styles.emergencyText}>Llamar Emergencias</Text>
         </TouchableOpacity>
       </View>
@@ -198,7 +208,7 @@ export default function AlertScreen() {
       {!location && (
         <View style={styles.locationWarning}>
           <Text style={styles.locationWarningText}>
-             Obteniendo ubicación... Asegúrate de tener los permisos activados.
+            Obteniendo ubicación... Asegúrate de tener los permisos activados.
           </Text>
         </View>
       )}
@@ -218,27 +228,27 @@ const alertTypes = [
 ];
 
 const styles = StyleSheet.create({
-  container: { 
-    flexGrow: 1, 
-    alignItems: "center", 
+  container: {
+    flexGrow: 1,
+    alignItems: "center",
     padding: 16,
-    backgroundColor: '#f8f9fa'
+    backgroundColor: "#f8f9fa",
   },
   header: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 20,
     paddingHorizontal: 20,
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#2c3e50',
+    fontWeight: "bold",
+    color: "#2c3e50",
     marginBottom: 8,
   },
   headerSubtitle: {
     fontSize: 16,
-    color: '#7f8c8d',
-    textAlign: 'center',
+    color: "#7f8c8d",
+    textAlign: "center",
     lineHeight: 22,
   },
   grid: {
@@ -254,10 +264,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     margin: 8,
     borderRadius: 20,
-    position: 'relative',
+    position: "relative",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.30,
+    shadowOpacity: 0.3,
     shadowRadius: 4.65,
     elevation: 8,
   },
@@ -269,23 +279,23 @@ const styles = StyleSheet.create({
     marginTop: 8,
     textAlign: "center",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   loadingOverlay: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: "rgba(0,0,0,0.5)",
     borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   loadingText: {
-    color: 'white',
+    color: "white",
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   emergencyContainer: {
     flexDirection: "row",
@@ -299,7 +309,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     alignItems: "center",
     justifyContent: "center",
-    flexDirection: 'row',
+    flexDirection: "row",
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -321,14 +331,15 @@ const styles = StyleSheet.create({
   locationWarning: {
     marginTop: 20,
     padding: 10,
-    backgroundColor: '#fff3cd',
+    backgroundColor: "#fff3cd",
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#ffeaa7',
+    borderColor: "#ffeaa7",
   },
   locationWarningText: {
-    color: '#856404',
-    textAlign: 'center',
+    color: "#856404",
+    textAlign: "center",
     fontSize: 14,
   },
 });
+
