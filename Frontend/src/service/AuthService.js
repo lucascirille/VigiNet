@@ -1,32 +1,40 @@
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import BASE_URL from '../config/apiConfig';
+import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import BASE_URL from "../config/apiConfig";
 
 const login = async (email, password) => {
   try {
     console.log("Intentando login con:", email);
     console.log("URL del backend:", BASE_URL);
-    
-    const response = await axios.post(`${BASE_URL}/auth/login`, {
-      email,
-      contrasena: password,
-    }, {
-      timeout: 15000, 
-      headers: {
-        'Content-Type': 'application/json',
-      }
-    });
+
+    const response = await axios.post(
+      `${BASE_URL}/auth/login`,
+      {
+        email,
+        contrasena: password,
+      },
+      {
+        timeout: 15000,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      },
+    );
 
     console.log("Respuesta del servidor:", response.status);
     console.log("Datos de respuesta:", response.data);
 
-    
     if (response.status === 200 && response.data) {
-      
       if (response.data.token) {
-        await AsyncStorage.setItem('userToken', response.data.token);
-        await AsyncStorage.setItem('usuarioId', response.data.user.usuarioId.toString());
-        await AsyncStorage.setItem('userData', JSON.stringify(response.data.user));
+        await AsyncStorage.setItem("userToken", response.data.token);
+        await AsyncStorage.setItem(
+          "usuarioId",
+          response.data.user.usuarioId.toString(),
+        );
+        await AsyncStorage.setItem(
+          "userData",
+          JSON.stringify(response.data.user),
+        );
         console.log("Datos guardados en AsyncStorage");
       }
 
@@ -37,18 +45,21 @@ const login = async (email, password) => {
     }
   } catch (error) {
     console.error("Error en la autenticación:", error);
-    
+
     if (error.response) {
-      
-      console.log("Error del servidor:", error.response.status, error.response.data);
+      console.log(
+        "Error del servidor:",
+        error.response.status,
+        error.response.data,
+      );
       throw new Error(error.response.data?.message || "Error del servidor");
     } else if (error.request) {
-      
       console.log("Error de red: No se recibió respuesta del servidor");
       console.log("Verifica que el backend esté ejecutándose en:", BASE_URL);
-      throw new Error("No se pudo conectar con el servidor. Verifica que el backend esté ejecutándose.");
+      throw new Error(
+        "No se pudo conectar con el servidor. Verifica que el backend esté ejecutándose.",
+      );
     } else {
-      
       console.log("Error:", error.message);
       throw new Error("Error de conexión: " + error.message);
     }
@@ -57,7 +68,7 @@ const login = async (email, password) => {
 
 const getToken = async () => {
   try {
-    return await AsyncStorage.getItem('userToken');
+    return await AsyncStorage.getItem("userToken");
   } catch (error) {
     console.error("Error obteniendo token:", error);
     return null;
@@ -66,7 +77,7 @@ const getToken = async () => {
 
 const getUserData = async () => {
   try {
-    const userData = await AsyncStorage.getItem('userData');
+    const userData = await AsyncStorage.getItem("userData");
     return userData ? JSON.parse(userData) : null;
   } catch (error) {
     console.error("Error obteniendo datos del usuario:", error);
@@ -76,10 +87,10 @@ const getUserData = async () => {
 
 const logout = async () => {
   try {
-    await AsyncStorage.removeItem('userToken');
-    await AsyncStorage.removeItem('userData');
-    await AsyncStorage.removeItem('usuarioId');
-    await AsyncStorage.removeItem('userId'); 
+    await AsyncStorage.removeItem("userToken");
+    await AsyncStorage.removeItem("userData");
+    await AsyncStorage.removeItem("usuarioId");
+    await AsyncStorage.removeItem("userId");
     console.log("Logout exitoso");
   } catch (error) {
     console.error("Error en logout:", error);
@@ -88,16 +99,19 @@ const logout = async () => {
 
 const updateUserProfile = async (userId, userData, token) => {
   try {
-    const response = await axios.put(`${BASE_URL}/usuarios/${userId}`, userData, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    });
+    const response = await axios.put(
+      `${BASE_URL}/usuarios/${userId}`,
+      userData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      },
+    );
 
-    
     const updatedUser = response.data;
-    await AsyncStorage.setItem('userData', JSON.stringify(updatedUser));
+    await AsyncStorage.setItem("userData", JSON.stringify(updatedUser));
 
     return updatedUser;
   } catch (error) {
@@ -115,4 +129,12 @@ const clearAllStorage = async () => {
   }
 };
 
-export { login, getToken, getUserData, logout, updateUserProfile, clearAllStorage };
+export {
+  login,
+  getToken,
+  getUserData,
+  logout,
+  updateUserProfile,
+  clearAllStorage,
+};
+

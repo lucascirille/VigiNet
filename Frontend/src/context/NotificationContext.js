@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
 import { View, Text, Animated, StyleSheet, Alert } from 'react-native';
 import socket from '../utils/socket';
+import { useAuth } from './AuthContext';
 
 const NotificationContext = createContext();
 
@@ -13,7 +14,79 @@ export const useNotification = () => {
   return context;
 };
 
+// Componente individual para cada notificación
+const NotificationItem = ({ notification, index, onRemove }) => {
+  const translateY = useRef(new Animated.Value(-100)).current;
+
+  useEffect(() => {
+    // Iniciar animación de entrada al montar
+    Animated.sequence([
+      Animated.timing(translateY, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }),
+      Animated.delay(4000), // Mostrar por 4 segundos
+      Animated.timing(translateY, {
+        toValue: -100,
+        duration: 300,
+        useNativeDriver: true,
+      })
+    ]).start(() => {
+      onRemove(notification.id);
+    });
+  }, []);
+
+  return (
+    <Animated.View
+      style={[
+        styles.notificationContainer,
+        {
+          transform: [{ translateY }],
+          top: index * 85, // Espacio entre notificaciones
+          backgroundColor: notification.type === 'alarm' ? 'rgba(220, 53, 69, 0.95)' : 'rgba(255, 255, 255, 0.95)'
+        }
+      ]}
+    >
+      <View style={styles.notificationContent}>
+        <View style={styles.headerContainer}>
+          <View style={styles.appIconContainer}>
+            <Text style={styles.appIcon}>
+              {notification.type === 'alarm' ? '🚨' : '📢'}
+            </Text>
+          </View>
+          <Text style={[
+            styles.appName,
+            { color: notification.type === 'alarm' ? '#fff' : '#000' }
+          ]}>
+            VigiNet
+          </Text>
+          <Text style={[
+            styles.timeText,
+            { color: notification.type === 'alarm' ? 'rgba(255,255,255,0.8)' : '#666' }
+          ]}>
+            ahora
+          </Text>
+        </View>
+        <Text style={[
+          styles.notificationTitle,
+          { color: notification.type === 'alarm' ? '#fff' : '#000' }
+        ]}>
+          {notification.title}
+        </Text>
+        <Text style={[
+          styles.notificationMessage,
+          { color: notification.type === 'alarm' ? 'rgba(255,255,255,0.9)' : '#333' }
+        ]}>
+          {notification.message}
+        </Text>
+      </View>
+    </Animated.View>
+  );
+};
+
 export const NotificationProvider = ({ children }) => {
+  const { authData } = useAuth();
   const [notifications, setNotifications] = useState([]);
   const [notificationHistory, setNotificationHistory] = useState([]);
   const listenersInitialized = useRef(false);
@@ -22,14 +95,13 @@ export const NotificationProvider = ({ children }) => {
   const showNotification = (title, message, type = 'info', data = {}) => {
     try {
       console.log('🔔 showNotification llamado con:', { title, message, type });
-      
+
       const newNotification = {
         id: Date.now() + Math.random(), // ID único
         title,
         message,
         type,
         data,
-        translateY: new Animated.Value(-100)
       };
 
       console.log('📝 Creando nueva notificación:', newNotification.id);
@@ -40,22 +112,6 @@ export const NotificationProvider = ({ children }) => {
       });
       setNotificationHistory(prev => [...prev, { ...newNotification, timestamp: new Date() }]);
 
-      Animated.sequence([
-        Animated.timing(newNotification.translateY, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-        Animated.delay(4000), // Mostrar por 4 segundos
-        Animated.timing(newNotification.translateY, {
-          toValue: -100,
-          duration: 300,
-          useNativeDriver: true,
-        })
-      ]).start(() => {
-        console.log('🗑️ Removiendo notificación:', newNotification.id);
-        setNotifications(prev => prev.filter(n => n.id !== newNotification.id));
-      });
     } catch (error) {
       console.error('Error showing notification:', error);
       // Fallback a alerta simple
@@ -63,12 +119,20 @@ export const NotificationProvider = ({ children }) => {
     }
   };
 
+  const removeNotification = (id) => {
+    console.log('🗑️ Removiendo notificación:', id);
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  };
+
   // Función para mostrar notificación de alarma
   const showAlarmNotification = (alarmData) => {
     try {
       const { emisor, mensaje, tipo } = alarmData;
+      // El tipo específico (ej: Incendio) está dentro del objeto alarma, el tipo raíz es 'alarma'
+      const specificType = alarmData.alarma?.tipo || tipo;
+
       showNotification(
-        `🚨 Alarma de ${tipo}`,
+        `🚨 Alarma de ${specificType}`,
         `${mensaje} - Reportado por: ${emisor}`,
         'alarm',
         alarmData
@@ -109,12 +173,31 @@ export const NotificationProvider = ({ children }) => {
       // Listener para nuevas alarmas
       socket.on('nuevaAlarma', (alarmData) => {
         console.log('🚨 Nueva alarma recibida:', alarmData);
+
+        // Verificar si el usuario actual es el emisor (evitar duplicados)
+        // Se intenta comparar con usuarioId, userId o emisorId si existen en la data
+        const senderId = alarmData.usuarioId || alarmData.userId || alarmData.emisorId;
+
+        if (authData?.userId && senderId && String(senderId) === String(authData.userId)) {
+          console.log('🚫 Ignorando alarma propia (ya mostrada localmente)');
+          return;
+        }
+
         showAlarmNotification(alarmData);
       });
 
       // Listener para notificaciones generales
       socket.on('notificacion', (notificationData) => {
         console.log('📢 Notificación recibida:', notificationData);
+
+        // Verificar si el usuario actual es el emisor
+        const senderId = notificationData.usuarioId || notificationData.userId || notificationData.emisorId;
+
+        if (authData?.userId && senderId && String(senderId) === String(authData.userId)) {
+          console.log('🚫 Ignorando notificación propia (ya mostrada localmente)');
+          return;
+        }
+
         showGeneralNotification(notificationData);
       });
 
@@ -134,7 +217,7 @@ export const NotificationProvider = ({ children }) => {
     } catch (error) {
       console.error('Error setting up socket listeners:', error);
     }
-  }, []);
+  }, [authData?.userId]); // Re-ejecutar si cambia el usuario (login/logout)
 
   // Función para limpiar historial
   const clearHistory = () => {
@@ -147,9 +230,9 @@ export const NotificationProvider = ({ children }) => {
   };
 
   return (
-    <NotificationContext.Provider value={{ 
-      showNotification, 
-      showAlarmNotification, 
+    <NotificationContext.Provider value={{
+      showNotification,
+      showAlarmNotification,
       showGeneralNotification,
       notificationHistory,
       clearHistory,
@@ -157,56 +240,14 @@ export const NotificationProvider = ({ children }) => {
     }}>
       {children}
       <View style={styles.notificationsContainer}>
-        {notifications.map((notification, index) => {
-          console.log('🎨 Renderizando notificación:', notification.id, 'en posición:', index);
-          return (
-            <Animated.View
-              key={notification.id}
-              style={[
-                styles.notificationContainer,
-                {
-                  transform: [{ translateY: notification.translateY }],
-                  top: index * 85, // Espacio entre notificaciones
-                  backgroundColor: notification.type === 'alarm' ? 'rgba(220, 53, 69, 0.95)' : 'rgba(255, 255, 255, 0.95)'
-                }
-              ]}
-            >
-              <View style={styles.notificationContent}>
-                <View style={styles.headerContainer}>
-                  <View style={styles.appIconContainer}>
-                    <Text style={styles.appIcon}>
-                      {notification.type === 'alarm' ? '🚨' : '📢'}
-                    </Text>
-                  </View>
-                  <Text style={[
-                    styles.appName,
-                    { color: notification.type === 'alarm' ? '#fff' : '#000' }
-                  ]}>
-                    VigiNet
-                  </Text>
-                  <Text style={[
-                    styles.timeText,
-                    { color: notification.type === 'alarm' ? 'rgba(255,255,255,0.8)' : '#666' }
-                  ]}>
-                    ahora
-                  </Text>
-                </View>
-                <Text style={[
-                  styles.notificationTitle,
-                  { color: notification.type === 'alarm' ? '#fff' : '#000' }
-                ]}>
-                  {notification.title}
-                </Text>
-                <Text style={[
-                  styles.notificationMessage,
-                  { color: notification.type === 'alarm' ? 'rgba(255,255,255,0.9)' : '#333' }
-                ]}>
-                  {notification.message}
-                </Text>
-              </View>
-            </Animated.View>
-          );
-        })}
+        {notifications.map((notification, index) => (
+          <NotificationItem
+            key={notification.id}
+            notification={notification}
+            index={index}
+            onRemove={removeNotification}
+          />
+        ))}
       </View>
     </NotificationContext.Provider>
   );

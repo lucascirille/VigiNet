@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, TextInput, TouchableOpacity, Alert, ActivityIndicator, Platform, Dimensions,} from "react-native";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TextInput,
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+  Platform,
+  Dimensions,
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuth } from "../context/AuthContext";
 import { updateUserProfile } from "../service/AuthService";
 
@@ -39,25 +50,26 @@ export default function EditProfileScreen({ navigation, route }) {
   }, [userData]);
 
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
   const validateForm = () => {
-    const requiredFields = ['nombre', 'apellido', 'email', 'telefono'];
-    const missingFields = requiredFields.filter(field => !formData[field].trim());
-    
+    const requiredFields = ["nombre", "apellido", "email", "telefono"];
+    const missingFields = requiredFields.filter(
+      (field) => !formData[field].trim(),
+    );
+
     if (missingFields.length > 0) {
       Alert.alert(
         "Campos Requeridos",
-        `Por favor completa los siguientes campos: ${missingFields.join(', ')}`
+        `Por favor completa los siguientes campos: ${missingFields.join(", ")}`,
       );
       return false;
     }
 
-   
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       Alert.alert("Email Inválido", "Por favor ingresa un email válido");
@@ -72,65 +84,75 @@ export default function EditProfileScreen({ navigation, route }) {
 
     setLoading(true);
     try {
-      const token = await AsyncStorage.getItem("userToken") || authData?.token;
-      const userId = await AsyncStorage.getItem("usuarioId") || authData?.userId;
+      const token =
+        (await AsyncStorage.getItem("userToken")) || authData?.token;
+      const userId =
+        (await AsyncStorage.getItem("usuarioId")) || authData?.userId;
 
-      console.log(' Debug - Token:', token ? '' : '');
-      console.log(' Debug - User ID:', userId);
+      console.log(" Debug - Token:", token ? "" : "");
+      console.log(" Debug - User ID:", userId);
 
       if (!token || !userId) {
         Alert.alert("Error", "No se encontró información de autenticación");
-        setLoading(false); 
+        setLoading(false);
         return;
       }
 
-      const dataToUpdate = Object.entries(formData).reduce((acc, [key, value]) => {
-        if (value && value.trim() !== "") {
-          acc[key] = value.trim();
-        }
-        return acc;
-      }, {});
+      const dataToUpdate = Object.entries(formData).reduce(
+        (acc, [key, value]) => {
+          if (value && value.trim() !== "") {
+            acc[key] = value.trim();
+          }
+          return acc;
+        },
+        {},
+      );
 
-      console.log('Debug - Datos a actualizar:', dataToUpdate);
+      console.log("Debug - Datos a actualizar:", dataToUpdate);
 
       const updatedUser = await updateUserProfile(userId, dataToUpdate, token);
-      
-      console.log('Debug - Usuario actualizado:', updatedUser);
+
+      console.log("Debug - Usuario actualizado:", updatedUser);
 
       Alert.alert("Éxito", "Perfil actualizado correctamente");
 
       if (route.params?.onUpdate) {
-        console.log(' Debug - Actualizando datos en pantalla anterior');
+        console.log(" Debug - Actualizando datos en pantalla anterior");
         route.params.onUpdate(updatedUser);
       }
-      
+
       setTimeout(() => {
         navigation.goBack();
       }, 100);
-
     } catch (error) {
       console.error(" Error updating profile:", error);
       console.error(" Error details:", {
         message: error.message,
         response: error.response?.data,
-        status: error.response?.status
+        status: error.response?.status,
       });
-      
+
       let errorMessage = "No se pudo actualizar el perfil. Intenta nuevamente.";
-      
+
       if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
       } else if (error.message) {
         errorMessage = error.message;
       }
-      
+
       Alert.alert("Error", errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  const renderInputField = (field, label, placeholder, keyboardType = "default", autoCapitalize = "words") => (
+  const renderInputField = (
+    field,
+    label,
+    placeholder,
+    keyboardType = "default",
+    autoCapitalize = "words",
+  ) => (
     <View style={styles.inputContainer}>
       <Text style={styles.inputLabel}>{label}</Text>
       <TextInput
@@ -167,17 +189,32 @@ export default function EditProfileScreen({ navigation, route }) {
           <Text style={styles.sectionTitle}>Información Personal</Text>
           {renderInputField("nombre", "Nombre", "Ingresa tu nombre")}
           {renderInputField("apellido", "Apellido", "Ingresa tu apellido")}
-          {renderInputField("email", "Email", "tu@email.com", "email-address", "none")}
-          {renderInputField("telefono", "Teléfono", "Ingresa tu teléfono", "phone-pad")}
+          {renderInputField(
+            "email",
+            "Email",
+            "tu@email.com",
+            "email-address",
+            "none",
+          )}
+          {renderInputField(
+            "telefono",
+            "Teléfono",
+            "Ingresa tu teléfono",
+            "phone-pad",
+          )}
         </View>
 
         {/* Dirección */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Dirección</Text>
-          {renderInputField("direccion", "Dirección Principal", "Ingresa tu dirección principal")}
+          {renderInputField(
+            "direccion",
+            "Dirección Principal",
+            "Ingresa tu dirección principal",
+          )}
           {renderInputField("calle1", "Calle 1", "Primera calle")}
           {renderInputField("calle2", "Calle 2", "Segunda calle (opcional)")}
-          
+
           <View style={styles.rowContainer}>
             <View style={styles.halfInput}>
               {renderInputField("piso", "Piso", "Número de piso")}
@@ -196,7 +233,7 @@ export default function EditProfileScreen({ navigation, route }) {
           >
             <Text style={styles.cancelButtonText}>Cancelar</Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             style={[styles.button, styles.saveButton]}
             onPress={handleSave}
@@ -336,4 +373,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
-}); 
+});
+
