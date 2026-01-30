@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, Platform, Linking, TouchableOpacity, TextInput, Alert,} from "react-native";
+import { View, Text, StyleSheet, FlatList, ActivityIndicator, Platform, Linking, TouchableOpacity, Alert, } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from "@react-navigation/native";
 import axios from "axios";
@@ -26,10 +27,22 @@ const formatDate = (dateString) => {
   }
 };
 
+const alertTypes = [
+  "Todas",
+  "Ambulancia",
+  "Violencia",
+  "Homicidio",
+  "Incendio",
+  "Accidente",
+  "Asalto",
+  "Inundación",
+  "Sospechoso",
+];
+
 export default function HistoryScreen() {
   const [masterAlerts, setMasterAlerts] = useState([]);
   const [filteredAlerts, setFilteredAlerts] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedType, setSelectedType] = useState("Todas");
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -42,17 +55,15 @@ export default function HistoryScreen() {
   );
 
   useEffect(() => {
-    if (searchQuery) {
+    if (selectedType && selectedType !== "Todas") {
       const newData = masterAlerts.filter((item) => {
-        const itemData = item.tipo ? item.tipo.toUpperCase() : "".toUpperCase();
-        const textData = searchQuery.toUpperCase();
-        return itemData.indexOf(textData) > -1;
+        return item.tipo === selectedType;
       });
       setFilteredAlerts(newData);
     } else {
       setFilteredAlerts(masterAlerts);
     }
-  }, [searchQuery, masterAlerts]);
+  }, [selectedType, masterAlerts]);
 
   const fetchAlerts = async () => {
     try {
@@ -176,16 +187,21 @@ export default function HistoryScreen() {
       <>
         <Text style={styles.title}>Alertas del Vecindario</Text>
 
-        {/* Buscador */}
-        <View style={styles.searchContainer}>
-          <Text style={styles.searchIcon}>🔍</Text>
-          <TextInput
-            style={styles.searchInput}
-            onChangeText={(text) => setSearchQuery(text)}
-            value={searchQuery}
-            placeholder="Buscar por tipo de alerta..."
-            placeholderTextColor="#999"
-          />
+        {/* Filter Dropdown */}
+        <View style={styles.pickerContainer}>
+          <Text style={styles.filterLabel}>Filtrar por tipo:</Text>
+          <View style={styles.pickerWrapper}>
+            <Picker
+              selectedValue={selectedType}
+              onValueChange={(itemValue) => setSelectedType(itemValue)}
+              style={styles.picker}
+              mode="dropdown" // Android only
+            >
+              {alertTypes.map((type) => (
+                <Picker.Item key={type} label={type} value={type} />
+              ))}
+            </Picker>
+          </View>
         </View>
 
         {filteredAlerts.length > 0 ? (
@@ -199,8 +215,8 @@ export default function HistoryScreen() {
           />
         ) : (
           <View style={styles.emptyStateContainer}>
-            {masterAlerts.length > 0 && searchQuery ? (
-              <Text style={styles.noAlertsText}>No se encontraron alertas para "{searchQuery}".</Text>
+            {masterAlerts.length > 0 && selectedType !== "Todas" ? (
+              <Text style={styles.noAlertsText}>No se encontraron alertas de tipo "{selectedType}".</Text>
             ) : (
               <>
                 <Text style={styles.noAlertsText}>No hay alertas en tu vecindario.</Text>
@@ -221,16 +237,11 @@ export default function HistoryScreen() {
 }
 
 const styles = StyleSheet.create({
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    borderRadius: 25,
-    paddingHorizontal: 15,
-    height: 48,
-    borderWidth: 1,
-    borderColor: "#ccc",
+  pickerContainer: {
     marginBottom: 20,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 10,
     ...Platform.select({
       ios: {
         shadowColor: "#000",
@@ -243,15 +254,22 @@ const styles = StyleSheet.create({
       },
     }),
   },
-  searchIcon: {
-    fontSize: 20,
-    color: "#999",
-    marginRight: 10,
+  filterLabel: {
+    fontSize: 14,
+    color: "#666",
+    marginBottom: 5,
+    marginLeft: 5,
   },
-  searchInput: {
-    flex: 1,
-    fontSize: 16,
-    color: "#333",
+  pickerWrapper: {
+    borderWidth: 1,
+    borderColor: "#e0e0e0",
+    borderRadius: 8,
+    backgroundColor: "#fafafa",
+    overflow: "hidden", // Helps on iOS to clip border radius
+  },
+  picker: {
+    height: 50,
+    width: "100%",
   },
   container: {
     flex: 1,
