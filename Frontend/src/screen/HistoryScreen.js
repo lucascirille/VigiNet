@@ -139,10 +139,10 @@ export default function HistoryScreen() {
         <Text
           style={[
             styles.alertStatus,
-            { color: item.activo ? "#4CAF50" : "#FF5722" },
+            { color: (item.activo && (new Date() - new Date(item.fechaHora) < 3600000)) ? "#4CAF50" : "#FF5722" },
           ]}
         >
-          {item.activo ? "Activa" : "Inactiva"}
+          {(item.activo && (new Date() - new Date(item.fechaHora) < 3600000)) ? "Activa" : "Inactiva"}
         </Text>
         {item.ubicaciones && item.ubicaciones.length > 0 ? (
           <TouchableOpacity

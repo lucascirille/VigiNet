@@ -55,7 +55,7 @@ export const getAllAlarmas = async () => {
 export const getAllAlarmasByVecindario = async (vecindarioId) => {
   return await prisma.alarma.findMany({
     where: { usuario: { vecindarioId: vecindarioId } },
-    include: { usuario: true },
+    include: { usuario: true, ubicaciones: true },
   });
 }
 
@@ -78,6 +78,8 @@ export const createAlarma = async (data) => {
   }
 
 
+  console.log("Creating Alarm with data:", JSON.stringify(data, null, 2));
+
   const alarma = await prisma.alarma.create({
     data: {
       activo: activo !== undefined ? activo : true,
@@ -86,13 +88,23 @@ export const createAlarma = async (data) => {
       usuario: {
         connect: { usuarioId: parseInt(usuarioId) },
       },
+      ubicaciones: (data.latitud !== undefined && data.longitud !== undefined) ? {
+        create: [{
+          latitud: parseFloat(data.latitud),
+          longitud: parseFloat(data.longitud),
+          usuarioId: parseInt(usuarioId)
+        }]
+      } : undefined
     },
     include: {
       usuario: {
         select: { nombre: true, apellido: true, vecindarioId: true }
-      }
+      },
+      ubicaciones: true // Include it in the return of create as well !
     }
   });
+
+  console.log("Alarm created:", JSON.stringify(alarma, null, 2));
 
 
   if (alarma.usuario && alarma.usuario.vecindarioId) {

@@ -4,28 +4,31 @@ import catchAsync from "../helpers/catchAsync.mjs";
 export const activarAlarma = catchAsync(async (req, res) => {
   const usuarioId = req.usuarioId;
   const { descripcion, tipo } = req.body;
+  console.log("Activando alarma - Body:", JSON.stringify(req.body, null, 2));
 
   if (!descripcion || !tipo) {
     return res.status(400).json({ error: "Faltan datos obligatorios" });
   }
 
   try {
-    
+
     const alarma = await alarmaService.createAlarma({
       tipo,
       descripcion,
       usuarioId,
-      activo: true
+      activo: true,
+      latitud: req.body.latitud,
+      longitud: req.body.longitud
     });
 
-    res.status(200).json({ 
-      message: "Alarma activada exitosamente", 
+    res.status(200).json({
+      message: "Alarma activada exitosamente",
       alarma,
-      notificacionEnviada: true 
+      notificacionEnviada: true
     });
   } catch (error) {
     console.error("Error al activar alarma:", error);
-    res.status(500).json({ error: "Error al activar la alarma" });
+    res.status(500).json({ error: "Error al activar la alarma", details: error.message });
   }
 });
 
@@ -60,7 +63,7 @@ export const deleteAlarma = catchAsync(async (req, res) => {
 
 export const getEstadisticasVecindario = catchAsync(async (req, res) => {
   const { vecindarioId } = req.params;
-  
+
   if (!vecindarioId) {
     return res.status(400).json({ error: "ID de vecindario requerido" });
   }
