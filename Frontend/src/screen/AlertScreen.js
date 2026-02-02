@@ -8,6 +8,7 @@ import {
   Alert,
   Linking,
 } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from "@expo/vector-icons";
 import { useNotification } from "../context/NotificationContext";
 import axios from "axios";
@@ -159,60 +160,62 @@ export default function AlertScreen() {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}> Alertas de Emergencia</Text>
-        <Text style={styles.headerSubtitle}>
-          Selecciona el tipo de emergencia para alertar a tu vecindario
-        </Text>
-      </View>
-
-      <View style={styles.grid}>
-        {alertTypes.map((alert, index) => (
-          <TouchableOpacity
-            key={index}
-            style={[
-              styles.alertButton,
-              { backgroundColor: alert.color },
-              isLoading && styles.alertButtonDisabled,
-            ]}
-            onPress={() => handleAlertPress(alert.label)}
-            disabled={isLoading}
-          >
-            <Ionicons name={alert.icon} size={40} color="white" />
-            <Text style={styles.alertText}>{alert.label}</Text>
-            {isLoading && (
-              <View style={styles.loadingOverlay}>
-                <Text style={styles.loadingText}>Enviando...</Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      <View style={styles.emergencyContainer}>
-        <TouchableOpacity
-          style={styles.emergencyButton}
-          onPress={handleEmergencyCall}
-        >
-          <Ionicons
-            name="call"
-            size={24}
-            color="white"
-            style={styles.emergencyIcon}
-          />
-          <Text style={styles.emergencyText}>Llamar Emergencias</Text>
-        </TouchableOpacity>
-      </View>
-
-      {!location && (
-        <View style={styles.locationWarning}>
-          <Text style={styles.locationWarningText}>
-            Obteniendo ubicación... Asegúrate de tener los permisos activados.
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#f8f9fa" }} edges={['bottom', 'left', 'right']}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.header}>
+          <Text style={styles.headerTitle}> Alertas de Emergencia</Text>
+          <Text style={styles.headerSubtitle}>
+            Selecciona el tipo de emergencia para alertar a tu vecindario
           </Text>
         </View>
-      )}
-    </ScrollView>
+
+        <View style={styles.grid}>
+          {alertTypes.map((alert, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.alertButton,
+                { backgroundColor: alert.color },
+                isLoading && styles.alertButtonDisabled,
+              ]}
+              onPress={() => handleAlertPress(alert.label)}
+              disabled={isLoading}
+            >
+              <Ionicons name={alert.icon} size={40} color="white" />
+              <Text style={styles.alertText}>{alert.label}</Text>
+              {isLoading && (
+                <View style={styles.loadingOverlay}>
+                  <Text style={styles.loadingText}>Enviando...</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <View style={styles.emergencyContainer}>
+          <TouchableOpacity
+            style={styles.emergencyButton}
+            onPress={handleEmergencyCall}
+          >
+            <Ionicons
+              name="call"
+              size={24}
+              color="white"
+              style={styles.emergencyIcon}
+            />
+            <Text style={styles.emergencyText}>Llamar Emergencias</Text>
+          </TouchableOpacity>
+        </View>
+
+        {!location && (
+          <View style={styles.locationWarning}>
+            <Text style={styles.locationWarningText}>
+              Obteniendo ubicación... Asegúrate de tener los permisos activados.
+            </Text>
+          </View>
+        )}
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

@@ -9,8 +9,7 @@ export const registerSchema = z.object({
 	direccion: z.string().min(1, { message: 'La dirección es obligatoria' }),
 	telefono: z.string().regex(/^\d{10,15}$/, { message: 'El teléfono debe tener entre 10 y 15 dígitos' }),
 	vecindarioId: z.number().int().positive({ message: 'vecindarioId debe ser un número positivo' }),
-	calle1: z.string().optional(),
-	calle2: z.string().optional(),
+
 	piso: z.string().optional(),
 	depto: z.string().optional()
 });
@@ -24,8 +23,7 @@ export const updateUserSchema = z.object({
 	direccion: z.string().min(1, { message: 'La dirección es obligatoria' }).optional(),
 	telefono: z.string().regex(/^\d{10,15}$/, { message: 'El teléfono debe tener entre 10 y 15 dígitos' }).optional(),
 	vecindarioId: z.number().int().positive({ message: 'vecindarioId debe ser un número positivo' }).optional(),
-	calle1: z.string().optional(),
-	calle2: z.string().optional(),
+
 	piso: z.string().optional(),
 	depto: z.string().optional()
 });

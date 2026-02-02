@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, Platform, Linking, TouchableOpacity, Alert, } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from "@react-navigation/native";
@@ -194,11 +195,12 @@ export default function HistoryScreen() {
             <Picker
               selectedValue={selectedType}
               onValueChange={(itemValue) => setSelectedType(itemValue)}
-              style={styles.picker}
+              style={[styles.picker, { color: '#000000' }]}
+              dropdownIconColor="#000000"
               mode="dropdown" // Android only
             >
               {alertTypes.map((type) => (
-                <Picker.Item key={type} label={type} value={type} />
+                <Picker.Item key={type} label={type} value={type} color="#000000" />
               ))}
             </Picker>
           </View>
@@ -230,9 +232,9 @@ export default function HistoryScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['bottom', 'left', 'right']}>
       {renderContent()}
-    </View>
+    </SafeAreaView>
   );
 }
 

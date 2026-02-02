@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useAuth } from "../context/AuthContext";
-import Icon from "react-native-vector-icons/Feather"; 
+import Icon from "react-native-vector-icons/Feather";
 
 export default function LoginScreen({ navigation }) {
   const { setAuthData, loginUser } = useAuth();
@@ -25,7 +25,7 @@ export default function LoginScreen({ navigation }) {
   };
 
   const handleLogin = async () => {
-    setError(""); 
+    setError("");
 
     if (!email) {
       setError("Por favor, ingresa tu correo electrónico.");
@@ -45,10 +45,10 @@ export default function LoginScreen({ navigation }) {
     try {
       console.log("Iniciando proceso de login...");
       const auth = await loginUser(email, password);
-      
+
       if (auth) {
         console.log("Login exitoso, navegando...");
-        
+
       } else {
         console.log("Login fallido");
         setError("Correo electrónico o contraseña no válidos.");
@@ -62,7 +62,7 @@ export default function LoginScreen({ navigation }) {
   };
 
   const handleRegister = () => {
-    navigation.navigate("Register"); 
+    navigation.navigate("Register");
     console.log("Estas en register");
   };
 
@@ -70,20 +70,22 @@ export default function LoginScreen({ navigation }) {
     <View style={styles.container}>
       <Text style={styles.label}>Iniciar sesión</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="email@dominio.com"
-        keyboardType="email-address"
-        value={email}
-        onChangeText={(text) => {
-          setEmail(text);
-          setError("");
-        }}
-      />
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.inputField}
+          placeholder="email@dominio.com"
+          keyboardType="email-address"
+          value={email}
+          onChangeText={(text) => {
+            setEmail(text);
+            setError("");
+          }}
+        />
+      </View>
 
       <View style={styles.inputContainer}>
         <TextInput
-          style={styles.passwordInput}
+          style={styles.inputField}
           placeholder="Contraseña"
           secureTextEntry={secureText}
           onChangeText={(text) => {
@@ -115,26 +117,22 @@ export default function LoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: "center", padding: 20 },
   label: { fontSize: 20, marginBottom: 20, textAlign: "center", fontWeight: "bold" },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 20,
-    fontSize: 16,
-  },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 5,
-    padding: 10,
+    paddingHorizontal: 10,
     marginBottom: 20,
+    height: 50, // Fixed height for consistency
   },
-  passwordInput: {
+  inputField: {
     flex: 1,
     fontSize: 16,
+    height: '100%',
+    paddingVertical: 0, // Remove default Android padding
+    color: '#000',
   },
   button: {
     backgroundColor: "#000",

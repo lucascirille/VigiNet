@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, ScrollView, TextInput, ActivityIndicator, Modal } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
@@ -63,10 +64,10 @@ export default function ProfileScreen({ navigation }) {
   };
 
   const handleLogout = () => {
-    
+
     setIsLogoutModalVisible(true);
   };
-  
+
   const confirmLogout = async () => {
     try {
       await logout();
@@ -81,8 +82,6 @@ export default function ProfileScreen({ navigation }) {
   const formatLabel = (label) => {
     return label
       .replace(/_/g, " ")
-      .replace(/calle1/i, "Calle 1")
-      .replace(/calle2/i, "Calle 2")
       .replace(/\b\w/g, (char) => char.toUpperCase());
   };
 
@@ -95,73 +94,75 @@ export default function ProfileScreen({ navigation }) {
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      {userData &&
-        Object.entries(userData)
-          .filter(([key]) => key.toLowerCase() !== "vecindarioid" && key.toLowerCase() !== "usuarioid")
-          .map(([key, value], index) => (
-            <View key={index} style={styles.infoContainer}>
-              <Text style={styles.infoLabel}>{formatLabel(key)}</Text>
-              {key.toLowerCase() === "contrasena" ? (
-                <Text style={styles.infoValue}>{"•".repeat(8)}</Text>
-              ) : (
-                <Text style={styles.infoValue}>{value?.toString() ?? ""}</Text>
-              )}
-            </View>
-          ))}
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }} edges={['bottom', 'left', 'right']}>
+      <ScrollView contentContainerStyle={styles.container}>
+        {userData &&
+          Object.entries(userData)
+            .filter(([key]) => key.toLowerCase() !== "vecindarioid" && key.toLowerCase() !== "usuarioid" && key.toLowerCase() !== "calle1" && key.toLowerCase() !== "calle2")
+            .map(([key, value], index) => (
+              <View key={index} style={styles.infoContainer}>
+                <Text style={styles.infoLabel}>{formatLabel(key)}</Text>
+                {key.toLowerCase() === "contrasena" ? (
+                  <Text style={styles.infoValue}>{"•".repeat(8)}</Text>
+                ) : (
+                  <Text style={styles.infoValue}>{value?.toString() ?? ""}</Text>
+                )}
+              </View>
+            ))}
 
-      {neighborhoodName && (
-        <View style={styles.infoContainer}>
-          <Text style={styles.infoLabel}>Vecindario</Text>
-          <Text style={styles.infoValue}>{neighborhoodName}</Text>
-        </View>
-      )}
+        {neighborhoodName && (
+          <View style={styles.infoContainer}>
+            <Text style={styles.infoLabel}>Vecindario</Text>
+            <Text style={styles.infoValue}>{neighborhoodName}</Text>
+          </View>
+        )}
 
-      <TouchableOpacity
-        style={styles.editButton}
-        onPress={() => navigation.navigate("EditProfile", {
-          userData: userData,
-          onUpdate: (updatedUser) => {
-            setUserData(updatedUser);
-            fetchUserData();
-          }
-        })}
-      >
-        <Text style={styles.editText}>Editar Perfil</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={() => navigation.navigate("EditProfile", {
+            userData: userData,
+            onUpdate: (updatedUser) => {
+              setUserData(updatedUser);
+              fetchUserData();
+            }
+          })}
+        >
+          <Text style={styles.editText}>Editar Perfil</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-        <Text style={styles.logoutText}>Cerrar Sesión</Text>
-      </TouchableOpacity>
+        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+          <Text style={styles.logoutText}>Cerrar Sesión</Text>
+        </TouchableOpacity>
 
-      <Modal
-        visible={isLogoutModalVisible}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setIsLogoutModalVisible(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Cerrar Sesión</Text>
-            <Text style={styles.modalMessage}>¿Estás seguro de que quieres cerrar sesión?</Text>
-            <View style={styles.modalButtonsContainer}>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.cancelButton]}
-                onPress={() => setIsLogoutModalVisible(false)}
-              >
-                <Text style={styles.modalButtonText}>Cancelar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.modalButton, styles.confirmButton]}
-                onPress={confirmLogout} // Llama a la nueva función de confirmación
-              >
-                <Text style={styles.modalButtonText}>Cerrar Sesión</Text>
-              </TouchableOpacity>
+        <Modal
+          visible={isLogoutModalVisible}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={() => setIsLogoutModalVisible(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Cerrar Sesión</Text>
+              <Text style={styles.modalMessage}>¿Estás seguro de que quieres cerrar sesión?</Text>
+              <View style={styles.modalButtonsContainer}>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.cancelButton]}
+                  onPress={() => setIsLogoutModalVisible(false)}
+                >
+                  <Text style={styles.modalButtonText}>Cancelar</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.modalButton, styles.confirmButton]}
+                  onPress={confirmLogout} // Llama a la nueva función de confirmación
+                >
+                  <Text style={styles.modalButtonText}>Cerrar Sesión</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        </View>
-      </Modal>
-    </ScrollView>
+        </Modal>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

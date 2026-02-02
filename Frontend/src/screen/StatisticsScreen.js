@@ -10,6 +10,7 @@ import {
   Platform,
   Alert,
 } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   LineChart,
@@ -234,7 +235,7 @@ export default function StatisticsScreen() {
     if (!estadisticas?.datosPorUsuario?.length) return null;
 
     const data = {
-      labels: estadisticas.datosPorUsuario.map(item => 
+      labels: estadisticas.datosPorUsuario.map(item =>
         item.usuario.length > 10 ? item.usuario.substring(0, 10) + "..." : item.usuario
       ),
       datasets: [
@@ -323,18 +324,20 @@ export default function StatisticsScreen() {
   }
 
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      <Text style={styles.title}>Estadísticas del Vecindario</Text>
-      
-      {renderResumen()}
-      {renderChartSelector()}
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#f5f5f5" }} edges={['bottom', 'left', 'right']}>
+      <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+        <Text style={styles.title}>Estadísticas del Vecindario</Text>
 
-      {selectedChart === "tipo" && renderTipoChart()}
-      {selectedChart === "mes" && renderMesChart()}
-      {selectedChart === "usuario" && renderUsuarioChart()}
+        {renderResumen()}
+        {renderChartSelector()}
 
-      {renderAlarmasRecientes()}
-    </ScrollView>
+        {selectedChart === "tipo" && renderTipoChart()}
+        {selectedChart === "mes" && renderMesChart()}
+        {selectedChart === "usuario" && renderUsuarioChart()}
+
+        {renderAlarmasRecientes()}
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 

@@ -21,7 +21,7 @@ import BASE_URL from '../config/apiConfig';
 export default function RegisterDetailsScreen({ navigation, route }) {
   const { width, height } = useWindowDimensions();
   const { email } = route.params;
-  
+
 
   const [vecindarios, setVecindarios] = useState([]);
   const [formData, setFormData] = useState({
@@ -32,8 +32,6 @@ export default function RegisterDetailsScreen({ navigation, route }) {
     direccion: "",
     telefono: "",
     vecindarioId: "",
-    calle1: "",
-    calle2: "",
     depto: "",
     piso: "",
   });
@@ -41,15 +39,13 @@ export default function RegisterDetailsScreen({ navigation, route }) {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showPicker, setShowPicker] = useState(false);
   const [error, setError] = useState("");
-  
+
 
   const refs = {
     apellido: useRef(null),
     contrasena: useRef(null),
     confirmarContrasena: useRef(null),
     direccion: useRef(null),
-    calle1: useRef(null),
-    calle2: useRef(null),
     telefono: useRef(null),
   };
 
@@ -58,10 +54,10 @@ export default function RegisterDetailsScreen({ navigation, route }) {
   const isTablet = width > 768 || height > 1000;
   const isSmallPhone = width < 375;
   const isLandscape = width > height;
-  const isShortScreen = height < 700; 
-  const isTallScreen = height > 850; 
-  const isVeryShortScreen = height < 600; 
-  
+  const isShortScreen = height < 700;
+  const isTallScreen = height > 850;
+  const isVeryShortScreen = height < 600;
+
   const getResponsiveConfig = () => {
     let config = {
       containerPadding: 20,
@@ -79,7 +75,7 @@ export default function RegisterDetailsScreen({ navigation, route }) {
       formPadding: 20,
     };
 
-   
+
     if (isVeryShortScreen) {
       config = {
         ...config,
@@ -127,7 +123,7 @@ export default function RegisterDetailsScreen({ navigation, route }) {
       };
     }
 
-    
+
     if (isTablet) {
       config = {
         ...config,
@@ -168,7 +164,7 @@ export default function RegisterDetailsScreen({ navigation, route }) {
 
   const config = getResponsiveConfig();
 
-  
+
   useEffect(() => {
     const barrios = [
       { id: "1", nombre: "Quilmes Oeste" },
@@ -201,9 +197,9 @@ export default function RegisterDetailsScreen({ navigation, route }) {
       return false;
     }
 
-    const requiredFields = ['nombre', 'apellido', 'contrasena', 'confirmarContrasena', 'direccion', 'telefono', 'vecindarioId', 'calle1', 'calle2'];
+    const requiredFields = ['nombre', 'apellido', 'contrasena', 'confirmarContrasena', 'direccion', 'telefono', 'vecindarioId'];
     const emptyFields = requiredFields.filter(field => !formData[field]);
-    
+
     if (emptyFields.length > 0) {
       Alert.alert("Error", "Por favor, complete todos los campos obligatorios.");
       return false;
@@ -235,7 +231,7 @@ export default function RegisterDetailsScreen({ navigation, route }) {
     }
   };
 
-  
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,
@@ -250,7 +246,7 @@ export default function RegisterDetailsScreen({ navigation, route }) {
       paddingHorizontal: config.containerPadding,
       paddingTop: config.topPadding,
       paddingBottom: Math.max(config.bottomPadding, 50),
-      minHeight: height + 100, 
+      minHeight: height + 100,
     },
     contentWrapper: {
       alignItems: "center",
@@ -454,10 +450,10 @@ export default function RegisterDetailsScreen({ navigation, route }) {
           onPress={() => setShowPass(!showPass)}
           activeOpacity={0.7}
         >
-          <FontAwesome 
-            name={showPass ? "eye-slash" : "eye"} 
-            size={20} 
-            color="#64748b" 
+          <FontAwesome
+            name={showPass ? "eye-slash" : "eye"}
+            size={20}
+            color="#64748b"
           />
         </TouchableOpacity>
       </View>
@@ -483,39 +479,35 @@ export default function RegisterDetailsScreen({ navigation, route }) {
         >
           <View style={styles.contentWrapper}>
             <Text style={styles.title}>Crear cuenta</Text>
-            
+
             <View style={styles.formContainer}>
               <View style={styles.formGrid}>
-                
+
                 {/* Nombres */}
                 <View style={styles.inputRow}>
                   {renderInput("Nombre", "nombre", "apellido")}
                   {renderInput("Apellido", "apellido", "contrasena")}
                 </View>
-                
+
                 {/* Contraseñas */}
                 <View style={styles.inputRow}>
                   {renderPasswordInput("Contraseña", "contrasena", "confirmarContrasena", showPassword, setShowPassword)}
                   {renderPasswordInput("Confirmar contraseña", "confirmarContrasena", "direccion", showConfirmPassword, setShowConfirmPassword)}
                 </View>
-                
+
                 {/* Dirección - Siempre full width */}
                 <View style={styles.fullWidthContainer}>
-                  {renderInput("Dirección", "direccion", "calle1")}
+                  {renderInput("Dirección", "direccion", "piso")}
                 </View>
-                
-                {/* Calles */}
-                <View style={styles.inputRow}>
-                  {renderInput("Calle 1", "calle1", "calle2")}
-                  {renderInput("Calle 2", "calle2", "telefono")}
-                </View>
-                
+
+
+
                 {/* Piso y Depto - En pantallas muy cortas van en columna */}
                 <View style={styles.inputRow}>
-                  {renderInput("Piso", "piso", null, "numeric", true)}
-                  {renderInput("Depto", "depto", null, "default", true)}
+                  {renderInput("Piso", "piso", "depto", "numeric", true)}
+                  {renderInput("Depto", "depto", "telefono", "default", true)}
                 </View>
-                
+
                 {/* Teléfono - Siempre full width */}
                 <View style={styles.fullWidthContainer}>
                   {renderInput("Teléfono", "telefono", null, "phone-pad")}
@@ -523,8 +515,8 @@ export default function RegisterDetailsScreen({ navigation, route }) {
 
                 {/* Selector de vecindario - Siempre full width */}
                 <View style={styles.fullWidthContainer}>
-                  <TouchableOpacity 
-                    style={styles.pickerContainer} 
+                  <TouchableOpacity
+                    style={styles.pickerContainer}
                     onPress={() => setShowPicker(true)}
                     activeOpacity={0.7}
                   >
@@ -542,11 +534,11 @@ export default function RegisterDetailsScreen({ navigation, route }) {
                     <Text style={styles.errorText}>{error}</Text>
                   </View>
                 ) : null}
-                
+
                 {/* Botón */}
                 <View style={styles.buttonContainer}>
-                  <TouchableOpacity 
-                    style={styles.button} 
+                  <TouchableOpacity
+                    style={styles.button}
                     onPress={handleRegister}
                     activeOpacity={0.9}
                   >
@@ -579,12 +571,13 @@ export default function RegisterDetailsScreen({ navigation, route }) {
               setShowPicker(false);
             }}
           >
-            <Picker.Item label="Seleccionar vecindario" value="" />
+            <Picker.Item label="Seleccionar vecindario" value="" color="#000000" />
             {vecindarios.map((vecindario) => (
-              <Picker.Item 
-                key={vecindario.id} 
-                label={vecindario.nombre} 
-                value={vecindario.id} 
+              <Picker.Item
+                key={vecindario.id}
+                label={vecindario.nombre}
+                value={vecindario.id}
+                color="#000000"
               />
             ))}
           </Picker>

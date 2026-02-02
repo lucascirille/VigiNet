@@ -58,8 +58,7 @@ model Usuario {
   contrasena     String
   telefono       String
   direccion      String
-  calle1         String?         // New field
-  calle2         String?         // New field
+
   piso           String?         // New field
   depto          String?         // New field
   vecindarioId   Int
