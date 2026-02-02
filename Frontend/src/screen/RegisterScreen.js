@@ -14,7 +14,7 @@ export default function RegisterScreen({ navigation }) {
       return;
     }
 
-  
+
     if (!email.includes("@")) {
       setErrorMessage("El correo electrónico debe contener un '@'.");
       return;
@@ -35,6 +35,7 @@ export default function RegisterScreen({ navigation }) {
       <TextInput
         style={styles.input}
         placeholder="email@dominio.com"
+        placeholderTextColor="#888"
         keyboardType="email-address"
         value={email}
         onChangeText={setEmail}
@@ -45,7 +46,7 @@ export default function RegisterScreen({ navigation }) {
       >
         <Text style={styles.buttonText}>Registrarse</Text>
       </TouchableOpacity>
-      
+
       {errorMessage ? <Text style={styles.errorMessage}>{errorMessage}</Text> : null}
 
       <Text style={styles.disclaimer}>

@@ -74,6 +74,7 @@ export default function LoginScreen({ navigation }) {
         <TextInput
           style={styles.inputField}
           placeholder="email@dominio.com"
+          placeholderTextColor="#888"
           keyboardType="email-address"
           value={email}
           onChangeText={(text) => {
@@ -87,6 +88,7 @@ export default function LoginScreen({ navigation }) {
         <TextInput
           style={styles.inputField}
           placeholder="Contraseña"
+          placeholderTextColor="#888"
           secureTextEntry={secureText}
           onChangeText={(text) => {
             setPassword(text);

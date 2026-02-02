@@ -200,7 +200,7 @@ export default function HistoryScreen() {
               mode="dropdown" // Android only
             >
               {alertTypes.map((type) => (
-                <Picker.Item key={type} label={type} value={type} color="#000000" />
+                <Picker.Item key={type} label={type} value={type} />
               ))}
             </Picker>
           </View>

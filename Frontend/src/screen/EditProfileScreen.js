@@ -27,8 +27,6 @@ export default function EditProfileScreen({ navigation, route }) {
     email: "",
     telefono: "",
     direccion: "",
-    calle1: "",
-    calle2: "",
     piso: "",
     depto: "",
   });
@@ -41,8 +39,6 @@ export default function EditProfileScreen({ navigation, route }) {
         email: userData.email || "",
         telefono: userData.telefono || "",
         direccion: userData.direccion || "",
-        calle1: userData.calle1 || "",
-        calle2: userData.calle2 || "",
         piso: userData.piso || "",
         depto: userData.depto || "",
       });
@@ -160,6 +156,7 @@ export default function EditProfileScreen({ navigation, route }) {
         value={formData[field]}
         onChangeText={(value) => handleInputChange(field, value)}
         placeholder={placeholder}
+        placeholderTextColor="#888"
         keyboardType={keyboardType}
         autoCapitalize={autoCapitalize}
         autoCorrect={false}
@@ -212,8 +209,6 @@ export default function EditProfileScreen({ navigation, route }) {
             "Dirección Principal",
             "Ingresa tu dirección principal",
           )}
-          {renderInputField("calle1", "Calle 1", "Primera calle")}
-          {renderInputField("calle2", "Calle 2", "Segunda calle (opcional)")}
 
           <View style={styles.rowContainer}>
             <View style={styles.halfInput}>

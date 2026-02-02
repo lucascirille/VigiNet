@@ -570,14 +570,16 @@ export default function RegisterDetailsScreen({ navigation, route }) {
               handleLoad("vecindarioId", itemValue);
               setShowPicker(false);
             }}
+            dropdownIconColor="#000000"
+            mode="dropdown"
+            style={{ backgroundColor: '#ffffff', color: '#000000' }}
           >
-            <Picker.Item label="Seleccionar vecindario" value="" color="#000000" />
+            <Picker.Item label="Seleccionar vecindario" value="" />
             {vecindarios.map((vecindario) => (
               <Picker.Item
                 key={vecindario.id}
                 label={vecindario.nombre}
                 value={vecindario.id}
-                color="#000000"
               />
             ))}
           </Picker>
