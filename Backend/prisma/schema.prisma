@@ -66,6 +66,7 @@ model Usuario {
   notificaciones Notificacion[]
   alarmas        Alarma[]
   ubicaciones    Ubicacion[]     // Relation to Ubicacion (renamed from Location)
+  pushToken      String?         // Expo Push Token
 }
 
 model Alarma {

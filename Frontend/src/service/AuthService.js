@@ -1,6 +1,7 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import BASE_URL from "../config/apiConfig";
+import { disconnectSocket } from "../utils/socket";
 
 const login = async (email, password) => {
   try {
@@ -87,13 +88,48 @@ const getUserData = async () => {
 
 const logout = async () => {
   try {
-    await AsyncStorage.removeItem("userToken");
-    await AsyncStorage.removeItem("userData");
-    await AsyncStorage.removeItem("usuarioId");
-    await AsyncStorage.removeItem("userId");
-    console.log("Logout exitoso");
+    // 0. Desconectar socket y servicios en tiempo real
+    disconnectSocket();
+
+    // Notify backend to clear push token
+    try {
+      const pushToken = await AsyncStorage.getItem("expoPushToken");
+
+      if (pushToken) {
+        console.log("Desregistrando push token:", pushToken);
+        await axios.post(
+          `${BASE_URL}/auth/unregister-push`,
+          { pushToken },
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+            timeout: 5000
+          }
+        );
+        console.log("Backend notificado para eliminar push token");
+        await AsyncStorage.removeItem("expoPushToken");
+      }
+    } catch (error) {
+      console.log("Error desregistrando push token:", error.message);
+    }
+    delete axios.defaults.headers.common["Authorization"];
+
+    // 2. Remover claves específicas primero (por seguridad)
+    const keys = ["userToken", "userData", "usuarioId", "userId"];
+    await AsyncStorage.multiRemove(keys);
+
+    // 3. Limpiar TODO el almacenamiento
+    await AsyncStorage.clear();
+    console.log("Logout exitoso: Cabeceras y AsyncStorage limpiados completamente");
   } catch (error) {
     console.error("Error en logout:", error);
+    // Intentar limpiar todo de todas formas si falla lo anterior
+    try {
+      await AsyncStorage.clear();
+    } catch (e) {
+      console.error("Error crítico limpiando AsyncStorage:", e);
+    }
   }
 };
 

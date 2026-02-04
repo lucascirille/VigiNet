@@ -98,7 +98,7 @@ export default function ProfileScreen({ navigation }) {
       <ScrollView contentContainerStyle={styles.container}>
         {userData &&
           Object.entries(userData)
-            .filter(([key]) => key.toLowerCase() !== "vecindarioid" && key.toLowerCase() !== "usuarioid" && key.toLowerCase() !== "calle1" && key.toLowerCase() !== "calle2")
+            .filter(([key]) => !["vecindarioid", "usuarioid", "calle1", "calle2", "pushtoken"].includes(key.toLowerCase()))
             .map(([key, value], index) => (
               <View key={index} style={styles.infoContainer}>
                 <Text style={styles.infoLabel}>{formatLabel(key)}</Text>

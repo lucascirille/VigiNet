@@ -33,3 +33,16 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+
+# secret files
+viginet-notification*.json
+
+
+# build output
+*.apk
+*.aab
+
+
+google-services.json
+**/google-services.json

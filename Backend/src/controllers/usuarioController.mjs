@@ -28,6 +28,16 @@ export const updateUsuario = catchAsync(async (req, res) => {
   res.status(200).json(usuario);
 });
 
+export const updatePushToken = catchAsync(async (req, res) => {
+  const { pushToken } = req.body;
+  if (!pushToken) {
+    return res.status(400).json({ message: 'pushToken is required' });
+  }
+  // Use usuarioId from auth middleware
+  const usuario = await usuarioService.updatePushToken(req.usuarioId, pushToken);
+  res.status(200).json({ message: 'Push token updated successfully' });
+});
+
 export const deleteUsuario = catchAsync(async (req, res) => {
   if (!await usuarioService.getUsuarioById(req.params.id)) return res.status(404).json({ message: 'Usuario no encontrado' });
   await usuarioService.deleteUsuario(req.params.id);

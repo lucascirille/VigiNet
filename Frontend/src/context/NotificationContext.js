@@ -1,8 +1,13 @@
-// frontend/context/NotificationContext.js
 import React, { createContext, useContext, useState, useRef, useEffect } from 'react';
-import { View, Text, Animated, StyleSheet, Alert } from 'react-native';
+import { View, Text, Animated, StyleSheet, Alert, Platform } from 'react-native';
 import socket from '../utils/socket';
 import { useAuth } from './AuthContext';
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
+import Constants from 'expo-constants';
+import axios from 'axios';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import BASE_URL from '../config/apiConfig';
 
 const NotificationContext = createContext();
 
@@ -90,6 +95,101 @@ export const NotificationProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
   const [notificationHistory, setNotificationHistory] = useState([]);
   const listenersInitialized = useRef(false);
+
+  // Clear notifications when user logs out
+  useEffect(() => {
+    if (!authData?.isAuthenticated) {
+      setNotifications([]);
+      setNotificationHistory([]);
+    }
+  }, [authData?.isAuthenticated]);
+  const responseListener = useRef();
+  const notificationListener = useRef();
+
+  // Configuración de notificaciones en primer plano
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+    }),
+  });
+
+  // ... (other imports)
+
+  // Función para registrar notificaciones Push
+  const registerForPushNotificationsAsync = async () => {
+    let token;
+
+    if (Platform.OS === 'android') {
+      await Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+      });
+    }
+
+    if (Device.isDevice) {
+      const { status: existingStatus } = await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+      if (existingStatus !== 'granted') {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+      if (finalStatus !== 'granted') {
+        alert('¡Se requieren permisos para notificaciones push!');
+        return;
+      }
+
+      try {
+        const projectId = Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.manifest2?.extra?.eas?.projectId;
+        if (!projectId) {
+          console.error('Project ID not found in Constants');
+        }
+        token = (await Notifications.getExpoPushTokenAsync({ projectId })).data;
+        console.log('ExponentPushToken:', token);
+      } catch (e) {
+        console.error('Error getting push token', e);
+      }
+    } else {
+      alert('Must use physical device for Push Notifications');
+    }
+
+    if (token) {
+      await AsyncStorage.setItem('expoPushToken', token);
+    }
+    return token;
+  };
+
+  // Efecto para registrar el token cuando el usuario se loguea
+  useEffect(() => {
+    const registerToken = async () => {
+      if (authData?.userId && authData?.token) {
+        const token = await registerForPushNotificationsAsync();
+        if (token) {
+          try {
+            console.log('Enviando push token al backend:', token);
+            await axios.put(
+              `${BASE_URL}/usuarios/push-token`,
+              { pushToken: token },
+              {
+                headers: {
+                  Authorization: `Bearer ${authData.token}`,
+                  "Content-Type": "application/json",
+                },
+              }
+            );
+            console.log('✅ Push token actualizado en backend');
+          } catch (error) {
+            console.error('Error sending push token to backend:', error);
+          }
+        }
+      }
+    };
+
+    registerToken();
+  }, [authData?.userId, authData?.token]);
 
   // Función para mostrar notificación
   const showNotification = (title, message, type = 'info', data = {}) => {
@@ -203,6 +303,24 @@ export const NotificationProvider = ({ children }) => {
 
       listenersInitialized.current = true;
 
+      // Listeners de Expo Notifications
+      notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+        /* 
+           Cuando la app está abierta, recibimos la notificación aquí.
+           Podemos decidir si mostrarla en la UI custom o dejar que el sistema la maneje.
+           Dado que ya tenemos socket.io para tiempo real en primer plano, esto podría ser redundante si el socket llega primero.
+           Sin embargo, el requerimiento es push.
+           Si llega por push Y socket, podríamos tener duplicados visuales.
+           Pero el push notification handler arriba está configurado para mostrar alerta (banner del sistema).
+        */
+        console.log('Push received via listener:', notification);
+      });
+
+      responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+        console.log('Notification response:', response);
+        // Aquí podemos navegar a una pantalla específica
+      });
+
       return () => {
         // Limpiar listeners al desmontar
         try {
@@ -210,6 +328,10 @@ export const NotificationProvider = ({ children }) => {
           socket.off('notificacion');
           listenersInitialized.current = false;
           console.log('🔧 Listeners de socket limpiados');
+
+          if (notificationListener.current) Notifications.removeNotificationSubscription(notificationListener.current);
+          if (responseListener.current) Notifications.removeNotificationSubscription(responseListener.current);
+
         } catch (error) {
           console.error('Error cleaning up socket listeners:', error);
         }
@@ -236,7 +358,8 @@ export const NotificationProvider = ({ children }) => {
       showGeneralNotification,
       notificationHistory,
       clearHistory,
-      getNotificationsByType
+      getNotificationsByType,
+      registerForPushNotificationsAsync // Exponer si es necesario llamarlo manualmente
     }}>
       {children}
       <View style={styles.notificationsContainer}>

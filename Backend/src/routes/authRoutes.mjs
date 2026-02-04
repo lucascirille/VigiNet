@@ -1,11 +1,13 @@
 // src/routes/authRoutes.mjs
 import express from 'express';
-import { login, validateToken } from '../controllers/authController.mjs';
+import { login, validateToken, logout, unregisterPushToken } from '../controllers/authController.mjs';
 import { authenticateToken } from '../middleware/authMiddleware.mjs';
 
 const router = express.Router();
 
 router.post('/login', login);
+router.post('/unregister-push', unregisterPushToken);
+router.post('/logout', authenticateToken, logout);
 router.post('/validate-token', validateToken);
 
 

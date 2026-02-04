@@ -68,6 +68,33 @@ export const updateUsuario = async (id, data) => {
     });
 };
 
+export const updatePushToken = async (id, pushToken) => {
+    // Optional: Ensure this token is not assigned to other users (to avoid wrong delivery on shared devices)
+    if (pushToken) {
+        await prisma.usuario.updateMany({
+            where: {
+                pushToken,
+                NOT: { usuarioId: parseInt(id) }
+            },
+            data: { pushToken: null }
+        });
+    }
+
+    return await prisma.usuario.update({
+        where: { usuarioId: parseInt(id) },
+        data: { pushToken },
+    });
+};
+
+export const clearPushToken = async (pushToken) => {
+    if (!pushToken) return;
+
+    return await prisma.usuario.updateMany({
+        where: { pushToken },
+        data: { pushToken: null }
+    });
+};
+
 export const deleteUsuario = async (id) => {
     return await prisma.usuario.delete({
         where: { usuarioId: parseInt(id) },

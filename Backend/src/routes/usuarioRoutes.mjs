@@ -16,6 +16,7 @@ router
 	.get(usuarioController.getAllUsuarios);
 
 router.get('/me', usuarioController.getUsuarioActual);
+router.put('/push-token', usuarioController.updatePushToken);
 
 router
 	.route('/:id')

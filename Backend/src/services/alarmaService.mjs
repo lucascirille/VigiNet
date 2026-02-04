@@ -1,5 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 import { io } from "../../init.mjs";
+import * as pushNotificationService from './pushNotificationService.mjs';
 
 const prisma = new PrismaClient();
 
@@ -127,6 +128,15 @@ export const createAlarma = async (data) => {
     io.to(`vecindario_${alarma.usuario.vecindarioId}`).emit('nuevaAlarma', notificacion);
 
     console.log(` Alarma enviada al vecindario ${alarma.usuario.vecindarioId}: ${tipo}`);
+
+    // SEND PUSH NOTIFICATION
+    await pushNotificationService.sendToNeighborhood(
+      alarma.usuario.vecindarioId,
+      { usuarioId: parseInt(usuarioId) }, // Sender info
+      `🚨 ALARMA: ${tipo}`,
+      descripcion || `Alarma de ${tipo} activada`,
+      { type: 'alarm', ...notificacion }
+    );
   }
 
   return alarma;
