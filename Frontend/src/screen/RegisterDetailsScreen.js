@@ -201,7 +201,18 @@ export default function RegisterDetailsScreen({ navigation, route }) {
     const emptyFields = requiredFields.filter(field => !formData[field]);
 
     if (emptyFields.length > 0) {
-      Alert.alert("Error", "Por favor, complete todos los campos obligatorios.");
+      Alert.alert("Campos incompletos", "Por favor, completa todos los campos para continuar.");
+      return false;
+    }
+
+    if (formData.nombre.length < 2 || formData.apellido.length < 2) {
+      setError("Por favor, ingresa un nombre y apellido válidos.");
+      return false;
+    }
+
+    const phoneRegex = /^[0-9]{10,15}$/;
+    if (!phoneRegex.test(formData.telefono)) {
+      setError("El número de teléfono no es válido. Usa solo números, entre 10 y 15 dígitos.");
       return false;
     }
 
@@ -223,11 +234,24 @@ export default function RegisterDetailsScreen({ navigation, route }) {
         headers: { "Content-Type": "application/json" },
       });
 
-      Alert.alert("Éxito", "Usuario registrado correctamente");
+      Alert.alert("¡Bienvenido!", "Tu cuenta ha sido creada exitosamente.");
       navigation.navigate("Login");
     } catch (error) {
       console.error("Error en el registro:", error.response?.data || error.message);
-      Alert.alert("Error", error.response?.data?.message || "No se pudo registrar el usuario.");
+
+      let message = "Hubo un problema al crear tu cuenta. Por favor, intenta de nuevo.";
+      if (error.response) {
+        if (error.response.status === 409) {
+          message = "Este correo o teléfono ya está registrado.";
+        } else if (error.response.data && error.response.data.message) {
+          // Use backend message but ensure it's not too raw/ugly if possible,
+          // or just fallback to generic if we want to be super safe. 
+          // Ideally we map known errors. For now, let's stick to the user request "custom friendly"
+          message = "Algunos datos no son correctos. Por favor verifícalos.";
+        }
+      }
+
+      Alert.alert("Algo salió mal", message);
     }
   };
 
@@ -303,6 +327,13 @@ export default function RegisterDetailsScreen({ navigation, route }) {
       shadowOpacity: 0.2,
       shadowRadius: 8,
       elevation: 4,
+    },
+    label: {
+      fontSize: 16,
+      fontWeight: '600',
+      marginBottom: 6,
+      color: '#334155',
+      marginLeft: 4,
     },
     passwordContainer: {
       position: "relative",
@@ -415,12 +446,13 @@ export default function RegisterDetailsScreen({ navigation, route }) {
   });
 
 
-  const renderInput = (placeholder, field, nextField, keyboardType = "default", optional = false) => (
+  const renderInput = (label, field, nextField, keyboardType = "default", optional = false) => (
     <View style={styles.inputContainer}>
+      <Text style={styles.label}>{label}</Text>
       <TextInput
         ref={refs[field]}
         style={styles.input}
-        placeholder={`${placeholder}${optional ? " (opcional)" : ""}`}
+        placeholder={`${label}${optional ? " (opcional)" : ""}`}
         placeholderTextColor="#94a3b8"
         value={formData[field]}
         keyboardType={keyboardType}
@@ -431,13 +463,14 @@ export default function RegisterDetailsScreen({ navigation, route }) {
     </View>
   );
 
-  const renderPasswordInput = (placeholder, field, nextField, showPass, setShowPass) => (
+  const renderPasswordInput = (label, field, nextField, showPass, setShowPass) => (
     <View style={styles.inputContainer}>
+      <Text style={styles.label}>{label}</Text>
       <View style={styles.passwordContainer}>
         <TextInput
           ref={refs[field]}
           style={styles.passwordInput}
-          placeholder={placeholder}
+          placeholder={label}
           placeholderTextColor="#94a3b8"
           secureTextEntry={!showPass}
           value={formData[field]}

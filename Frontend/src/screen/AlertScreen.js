@@ -162,11 +162,23 @@ export default function AlertScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#f8f9fa" }} edges={['bottom', 'left', 'right']}>
       <ScrollView contentContainerStyle={styles.container}>
-        <View style={styles.header}>
+        {/* <View style={styles.header}>
           <Text style={styles.headerTitle}> Alertas de Emergencia</Text>
-          <Text style={styles.headerSubtitle}>
-            Selecciona el tipo de emergencia para alertar a tu vecindario
-          </Text>
+        </View> */}
+
+        <View style={styles.emergencyContainer}>
+          <TouchableOpacity
+            style={styles.emergencyButton}
+            onPress={handleEmergencyCall}
+          >
+            <Ionicons
+              name="call"
+              size={28}
+              color="white"
+              style={styles.emergencyIcon}
+            />
+            <Text style={styles.emergencyText}>Llamar Emergencias</Text>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.grid}>
@@ -181,7 +193,7 @@ export default function AlertScreen() {
               onPress={() => handleAlertPress(alert.label)}
               disabled={isLoading}
             >
-              <Ionicons name={alert.icon} size={40} color="white" />
+              <Ionicons name={alert.icon} size={55} color="white" />
               <Text style={styles.alertText}>{alert.label}</Text>
               {isLoading && (
                 <View style={styles.loadingOverlay}>
@@ -192,20 +204,7 @@ export default function AlertScreen() {
           ))}
         </View>
 
-        <View style={styles.emergencyContainer}>
-          <TouchableOpacity
-            style={styles.emergencyButton}
-            onPress={handleEmergencyCall}
-          >
-            <Ionicons
-              name="call"
-              size={24}
-              color="white"
-              style={styles.emergencyIcon}
-            />
-            <Text style={styles.emergencyText}>Llamar Emergencias</Text>
-          </TouchableOpacity>
-        </View>
+
 
         {!location && (
           <View style={styles.locationWarning}>
@@ -234,12 +233,13 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     alignItems: "center",
+    justifyContent: "center",
     padding: 16,
     backgroundColor: "#f8f9fa",
   },
   header: {
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 10,
     paddingHorizontal: 20,
   },
   headerTitle: {
@@ -261,11 +261,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   alertButton: {
-    width: 130,
-    height: 115,
+    width: '46%',
+    height: 125,
     alignItems: "center",
     justifyContent: "center",
-    margin: 8,
+    margin: '2%',
     borderRadius: 20,
     position: "relative",
     shadowColor: "#000",
@@ -281,7 +281,7 @@ const styles = StyleSheet.create({
     color: "white",
     marginTop: 8,
     textAlign: "center",
-    fontSize: 16,
+    fontSize: 19,
     fontWeight: "600",
   },
   loadingOverlay: {
@@ -302,13 +302,13 @@ const styles = StyleSheet.create({
   },
   emergencyContainer: {
     flexDirection: "row",
-    marginTop: 10,
+    marginBottom: 15,
     justifyContent: "center",
   },
   emergencyButton: {
     backgroundColor: "red",
-    paddingHorizontal: 40,
-    paddingVertical: 15,
+    width: "90%",
+    paddingVertical: 18,
     borderRadius: 100,
     alignItems: "center",
     justifyContent: "center",
@@ -327,7 +327,7 @@ const styles = StyleSheet.create({
   },
   emergencyText: {
     color: "white",
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "bold",
     textAlign: "center",
   },

@@ -60,15 +60,26 @@ export default function EditProfileScreen({ navigation, route }) {
 
     if (missingFields.length > 0) {
       Alert.alert(
-        "Campos Requeridos",
-        `Por favor completa los siguientes campos: ${missingFields.join(", ")}`,
+        "Campos incompletos",
+        "Por favor, completa todos los campos para continuar.",
       );
+      return false;
+    }
+
+    if (formData.nombre.length < 2 || formData.apellido.length < 2) {
+      Alert.alert("Nombre inválido", "Por favor, ingresa un nombre y apellido válidos.");
       return false;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       Alert.alert("Email Inválido", "Por favor ingresa un email válido");
+      return false;
+    }
+
+    const phoneRegex = /^[0-9]{10,15}$/;
+    if (!phoneRegex.test(formData.telefono)) {
+      Alert.alert("Teléfono inválido", "El número de teléfono no es válido. Usa solo números, entre 10 y 15 dígitos.");
       return false;
     }
 
@@ -130,13 +141,14 @@ export default function EditProfileScreen({ navigation, route }) {
 
       let errorMessage = "No se pudo actualizar el perfil. Intenta nuevamente.";
 
-      if (error.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      } else if (error.message) {
-        errorMessage = error.message;
+      if (error.response?.status === 409) {
+        errorMessage = "Este correo o teléfono ya está registrado.";
+      } else if (error.response?.data?.message) {
+        // Friendly mapping or fallback
+        errorMessage = "Algunos datos no son correctos. Por favor verifícalos.";
       }
 
-      Alert.alert("Error", errorMessage);
+      Alert.alert("Algo salió mal", errorMessage);
     } finally {
       setLoading(false);
     }

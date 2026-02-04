@@ -37,12 +37,11 @@ yarn-error.*
 
 # secret files
 viginet-notification*.json
-
+# comment when you re going to build
+google-services.json  
 
 # build output
 *.apk
 *.aab
 
 
-google-services.json
-**/google-services.json

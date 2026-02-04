@@ -48,7 +48,6 @@ const NotificationItem = ({ notification, index, onRemove }) => {
         styles.notificationContainer,
         {
           transform: [{ translateY }],
-          top: index * 85, // Espacio entre notificaciones
           backgroundColor: notification.type === 'alarm' ? 'rgba(220, 53, 69, 0.95)' : 'rgba(255, 255, 255, 0.95)'
         }
       ]}
@@ -388,7 +387,7 @@ const styles = StyleSheet.create({
   },
   notificationContainer: {
     borderRadius: 12,
-    marginBottom: 8,
+    marginBottom: 2,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -399,12 +398,12 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   notificationContent: {
-    padding: 16,
+    padding: 10,
   },
   headerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 4,
   },
   appIconContainer: {
     width: 24,
