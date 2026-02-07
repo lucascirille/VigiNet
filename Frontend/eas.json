@@ -14,13 +14,13 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_BASE_URL": "https://viginet.duckdns.org/api"
+        "EXPO_PUBLIC_BASE_URL": "https://viginet.onrender.com/api"
       }
     },
     "production": {
       "autoIncrement": true,
       "env": {
-        "EXPO_PUBLIC_BASE_URL": "https://viginet.duckdns.org/api"
+        "EXPO_PUBLIC_BASE_URL": "https://viginet.onrender.com/api"
       }
     }
   },
