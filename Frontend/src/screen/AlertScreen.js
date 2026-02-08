@@ -8,7 +8,7 @@ import {
   Alert,
   Linking,
 } from "react-native";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useNotification } from "../context/NotificationContext";
 import axios from "axios";
@@ -63,19 +63,14 @@ export default function AlertScreen() {
 
         console.log(` Usuario cargado: ${user.nombre} ${user.apellido}`);
 
-        let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") {
-          Alert.alert(
-            "Permiso Denegado",
-            "Necesitamos tu ubicación para proceder.",
-          );
-          return;
+        let { status } = await Location.getForegroundPermissionsAsync();
+        if (status === "granted") {
+          const currentLocation = await Location.getCurrentPositionAsync({
+            accuracy: Location.Accuracy.High,
+          });
+          setLocation(currentLocation.coords);
+          console.log(" Ubicación obtenida:", currentLocation.coords);
         }
-        const currentLocation = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.High,
-        });
-        setLocation(currentLocation.coords);
-        console.log(" Ubicación obtenida:", currentLocation.coords);
       } catch (error) {
         if (axios.isAxiosError(error) && error.response?.status === 404) {
           console.error(
@@ -106,12 +101,31 @@ export default function AlertScreen() {
       return;
     }
 
-    if (!location) {
-      Alert.alert(
-        "Error",
-        "No se pudo obtener tu ubicación. Por favor, asegúrate de tener los permisos activados.",
-      );
-      return;
+    let currentLocation = location;
+
+    if (!currentLocation) {
+      const { status } = await Location.getForegroundPermissionsAsync();
+      if (status !== "granted") {
+        const { status: newStatus } = await Location.requestForegroundPermissionsAsync();
+        if (newStatus !== "granted") {
+          Alert.alert(
+            "Permiso requerido",
+            "Es necesario activar la ubicación para enviar una alerta."
+          );
+          return;
+        }
+      }
+
+      try {
+        const locationResult = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.High,
+        });
+        currentLocation = locationResult.coords;
+        setLocation(currentLocation);
+      } catch (error) {
+        Alert.alert("Error", "No se pudo obtener la ubicación actual.");
+        return;
+      }
     }
 
     setIsLoading(true);
@@ -129,16 +143,16 @@ export default function AlertScreen() {
         usuarioId: userId,
         vecindarioId: userData.vecindarioId,
         emisor: emisor,
-        latitud: location.latitude,
-        longitud: location.longitude,
+        latitud: currentLocation.latitude,
+        longitud: currentLocation.longitude,
       });
 
       const alarmaResponse = await axios.post(`${BASE_URL}/alarmas/activar`, {
         tipo: alertType,
         descripcion: `Alarma de ${alertType} activada por ${emisor}`,
         usuarioId: userId,
-        latitud: location.latitude,
-        longitud: location.longitude,
+        latitud: currentLocation.latitude,
+        longitud: currentLocation.longitude,
       });
 
       console.log("Alarma activada:", alarmaResponse.data);
@@ -160,7 +174,10 @@ export default function AlertScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#f8f9fa" }} edges={['bottom', 'left', 'right']}>
+    <SafeAreaView
+      style={{ flex: 1, backgroundColor: "#f8f9fa" }}
+      edges={["bottom", "left", "right"]}
+    >
       <ScrollView contentContainerStyle={styles.container}>
         {/* <View style={styles.header}>
           <Text style={styles.headerTitle}> Alertas de Emergencia</Text>
@@ -205,28 +222,20 @@ export default function AlertScreen() {
         </View>
 
 
-
-        {!location && (
-          <View style={styles.locationWarning}>
-            <Text style={styles.locationWarningText}>
-              Obteniendo ubicación... Asegúrate de tener los permisos activados.
-            </Text>
-          </View>
-        )}
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const alertTypes = [
-  { id: 1, label: "Ambulancia", icon: "medical", color: "#e74c3c" },
-  { id: 2, label: "Violencia", icon: "hand-left", color: "#f39c12" },
-  { id: 3, label: "Homicidio", icon: "skull", color: "#c0392b" },
-  { id: 4, label: "Incendio", icon: "flame", color: "#e67e22" },
-  { id: 5, label: "Accidente", icon: "car-sport", color: "#3498db" },
-  { id: 6, label: "Asalto", icon: "shield-checkmark", color: "#9b59b6" },
-  { id: 7, label: "Inundación", icon: "water", color: "#2980b9" },
-  { id: 8, label: "Sospechoso", icon: "eye", color: "#34495e" },
+  { id: 1, label: "Ambulancia", icon: "medkit", color: "#DC2626" },
+  { id: 2, label: "Violencia", icon: "hand-left", color: "#C2410C" },
+  { id: 3, label: "Muerte", icon: "skull", color: "#111827" },
+  { id: 4, label: "Incendio", icon: "flame", color: "#F97316" },
+  { id: 5, label: "Accidente", icon: "car", color: "#EF4444" },
+  { id: 6, label: "Asalto", icon: "alert-circle", color: "#F59E0B" },
+  { id: 7, label: "Inundación", icon: "water", color: "#2563EB" },
+  { id: 8, label: "Sospechoso", icon: "eye", color: "#475569" },
 ];
 
 const styles = StyleSheet.create({
@@ -261,11 +270,11 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   alertButton: {
-    width: '46%',
+    width: "46%",
     height: 125,
     alignItems: "center",
     justifyContent: "center",
-    margin: '2%',
+    margin: "2%",
     borderRadius: 20,
     position: "relative",
     shadowColor: "#000",
@@ -345,4 +354,3 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
-

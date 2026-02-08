@@ -278,7 +278,7 @@ export default function StatisticsScreen() {
           <Text style={styles.resumenNumber}>
             {estadisticas?.datosPorUsuario?.length || 0}
           </Text>
-          <Text style={styles.resumenLabel}>Usuarios Activos</Text>
+          <Text style={styles.resumenLabel}>Usuarios</Text>
         </View>
       </View>
     </View>

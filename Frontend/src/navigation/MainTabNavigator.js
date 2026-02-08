@@ -6,6 +6,7 @@ import ProfileScreen from "../screen/ProfileScreen";
 import EditProfileScreen from "../screen/EditProfileScreen";
 import HistoryScreen from "../screen/HistoryScreen";
 import StatisticsScreen from "../screen/StatisticsScreen";
+import OptionsScreen from "../screen/OptionsScreen";
 import { THEME } from "../theme/theme";
 
 const Tab = createBottomTabNavigator();
@@ -20,16 +21,24 @@ function ProfileStackNavigator() {
         headerTitleAlign: "center",
       }}
     >
-      <ProfileStack.Screen 
-        name="ProfileMain" 
+      <ProfileStack.Screen
+        name="ProfileMain"
         component={ProfileScreen}
         options={{ headerShown: false }}
       />
-      <ProfileStack.Screen 
-        name="EditProfile" 
+      <ProfileStack.Screen
+        name="EditProfile"
         component={EditProfileScreen}
-        options={{ 
+        options={{
           title: "Editar Perfil",
+          headerBackTitle: "Atrás"
+        }}
+      />
+      <ProfileStack.Screen
+        name="Options"
+        component={OptionsScreen}
+        options={{
+          title: "Opciones",
           headerBackTitle: "Atrás"
         }}
       />
@@ -61,7 +70,7 @@ export default function MainTabNavigator() {
         },
         headerStyle: THEME.headerStyle,
         headerTitleStyle: THEME.headerTitleStyle,
-        headerTitleAlign: "center", 
+        headerTitleAlign: "center",
       })}
     >
       <Tab.Screen name="Alertas" component={AlertScreen} />

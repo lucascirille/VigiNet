@@ -12,11 +12,10 @@ import BASE_URL from '../config/apiConfig';
 axios.defaults.baseURL = BASE_URL;
 
 export default function ProfileScreen({ navigation }) {
-  const { logout } = useAuth();
+  const { logout } = useAuth(); // Keep logout for now in case we need to handle token expiry within fetchUserData, though catch block handles it. Actually, the original code used logout in fetchUserData.
   const [userData, setUserData] = useState(null);
   const [neighborhoodName, setNeighborhoodName] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false);
 
   useEffect(() => {
     fetchUserData();
@@ -63,21 +62,7 @@ export default function ProfileScreen({ navigation }) {
     }
   };
 
-  const handleLogout = () => {
 
-    setIsLogoutModalVisible(true);
-  };
-
-  const confirmLogout = async () => {
-    try {
-      await logout();
-      setIsLogoutModalVisible(false);
-    } catch (error) {
-      console.error("Error en logout:", error);
-      setIsLogoutModalVisible(false);
-      logout(); // Intenta hacer logout de todas formas
-    }
-  };
 
   const formatLabel = (label) => {
     return label
@@ -130,37 +115,12 @@ export default function ProfileScreen({ navigation }) {
           <Text style={styles.editText}>Editar Perfil</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Text style={styles.logoutText}>Cerrar Sesión</Text>
-        </TouchableOpacity>
-
-        <Modal
-          visible={isLogoutModalVisible}
-          transparent={true}
-          animationType="fade"
-          onRequestClose={() => setIsLogoutModalVisible(false)}
+        <TouchableOpacity
+          style={styles.optionsButton}
+          onPress={() => navigation.navigate("Options")}
         >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Cerrar Sesión</Text>
-              <Text style={styles.modalMessage}>¿Estás seguro de que quieres cerrar sesión?</Text>
-              <View style={styles.modalButtonsContainer}>
-                <TouchableOpacity
-                  style={[styles.modalButton, styles.cancelButton]}
-                  onPress={() => setIsLogoutModalVisible(false)}
-                >
-                  <Text style={styles.modalButtonText}>Cancelar</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.modalButton, styles.confirmButton]}
-                  onPress={confirmLogout} // Llama a la nueva función de confirmación
-                >
-                  <Text style={styles.modalButtonText}>Cerrar Sesión</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Modal>
+          <Text style={styles.optionsText}>Opciones</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -172,15 +132,20 @@ const styles = StyleSheet.create({
   infoContainer: { width: "100%", padding: 10, borderBottomWidth: 1, borderBottomColor: "#ecf0f1" },
   infoLabel: { fontSize: 14, color: "gray" },
   infoValue: { fontSize: 16, fontWeight: "bold", marginTop: 5 },
-  logoutButton: {
+  optionsButton: {
     marginTop: 30,
-    backgroundColor: "teal",
+    backgroundColor: "#2c3e50", // Dark blue/grey for options
     paddingHorizontal: 40,
-    paddingVertical: 10,
-    borderRadius: 90,
+    paddingVertical: 12,
+    borderRadius: 25,
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  logoutText: { color: "white", fontSize: 20, textAlign: "center" },
+  optionsText: { color: "white", fontSize: 20, textAlign: "center" },
   editButton: {
     marginTop: 20,
     backgroundColor: "#0D99FF",
@@ -195,45 +160,4 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   editText: { color: "white", fontSize: 20, textAlign: "center" },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContent: {
-    width: "80%",
-    backgroundColor: "white",
-    borderRadius: 10,
-    padding: 20,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  modalMessage: {
-    fontSize: 16,
-    marginBottom: 20,
-  },
-  modalButtonsContainer: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-  },
-  modalButton: {
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 5,
-    marginLeft: 10,
-  },
-  cancelButton: {
-    backgroundColor: "#ccc",
-  },
-  confirmButton: {
-    backgroundColor: "teal",
-  },
-  modalButtonText: {
-    color: "white",
-    fontSize: 16,
-  },
 });
