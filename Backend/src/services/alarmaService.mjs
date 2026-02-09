@@ -45,6 +45,25 @@ export const activarAlarma = async (usuarioId, descripcion, tipo) => {
 
 
 export const getAllAlarmas = async (filters = {}) => {
+  // Deactivate alerts older than 1 hour
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+  try {
+    await prisma.alarma.updateMany({
+      where: {
+        activo: true,
+        fechaHora: {
+          lt: oneHourAgo
+        }
+      },
+      data: {
+        activo: false
+      }
+    });
+  } catch (error) {
+    console.error("Error auto-deactivating old alerts:", error);
+    // Continue execution even if update fails
+  }
+
   const where = {};
 
   if (filters.usuarioId) {
@@ -69,6 +88,24 @@ export const getAllAlarmas = async (filters = {}) => {
 };
 
 export const getAllAlarmasByVecindario = async (vecindarioId) => {
+  // Deactivate alerts older than 1 hour
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+  try {
+    await prisma.alarma.updateMany({
+      where: {
+        activo: true,
+        fechaHora: {
+          lt: oneHourAgo
+        }
+      },
+      data: {
+        activo: false
+      }
+    });
+  } catch (error) {
+    console.error("Error auto-deactivating old alerts in getAllAlarmasByVecindario:", error);
+  }
+
   return await prisma.alarma.findMany({
     where: { usuario: { vecindarioId: vecindarioId } },
     include: { usuario: true, ubicaciones: true },

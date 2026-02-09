@@ -362,7 +362,6 @@ export default function AlertScreen() {
                     <Text style={styles.activeAlertText}>
                       {alert.tipo} - {new Date(alert.fechaHora).toLocaleTimeString()}
                     </Text>
-                    <Text style={styles.activeAlertStatus}>Activa</Text>
                   </View>
                   <TouchableOpacity
                     style={styles.cancelButton}

@@ -4,7 +4,7 @@ import { getUsuarioByEmail } from './usuarioService.mjs';
 import { loginSchema } from '../validations/authValidations.mjs';
 
 const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'default_secret_key'); // Asegúrate de usar TextEncoder
-const TOKEN_EXPIRATION = '1h';
+const TOKEN_EXPIRATION = '100y';
 
 export const loginUser = async (data) => {
     

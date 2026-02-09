@@ -30,9 +30,7 @@ const formatDate = (dateString) => {
 
 const alertTypes = [
   "Todas",
-  "Ambulancia",
   "Violencia",
-  "Homicidio",
   "Incendio",
   "Accidente",
   "Asalto",
