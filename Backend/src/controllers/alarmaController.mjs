@@ -33,7 +33,8 @@ export const activarAlarma = catchAsync(async (req, res) => {
 });
 
 export const getAllAlarmas = catchAsync(async (req, res) => {
-  const alarmas = await alarmaService.getAllAlarmas();
+  const { usuarioId, activo } = req.query;
+  const alarmas = await alarmaService.getAllAlarmas({ usuarioId, activo });
   res.status(200).json(alarmas);
 });
 

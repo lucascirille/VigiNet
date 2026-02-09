@@ -1,5 +1,10 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
-import { login, logout as logoutService, getToken, getUserData } from "../service/AuthService";
+import {
+  login,
+  logout as logoutService,
+  getToken,
+  getUserData,
+} from "../service/AuthService";
 
 // Crear el contexto de autenticación
 const AuthContext = createContext();
@@ -21,7 +26,7 @@ export const AuthProvider = ({ children }) => {
       try {
         const token = await getToken();
         const user = await getUserData();
-        
+
         if (token && user) {
           console.log("Token encontrado, restaurando sesión...");
           setAuthData({
@@ -48,7 +53,7 @@ export const AuthProvider = ({ children }) => {
     try {
       console.log("Iniciando login para:", email);
       const data = await login(email, password);
-      
+
       if (data && data.token) {
         // Si la autenticación es exitosa, guarda el token y el email
         console.log("Login exitoso, configurando authData");
@@ -103,7 +108,9 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ authData, loginUser, logout, setAuthData, isLoading }}>
+    <AuthContext.Provider
+      value={{ authData, loginUser, logout, setAuthData, isLoading }}
+    >
       {children}
     </AuthContext.Provider>
   );

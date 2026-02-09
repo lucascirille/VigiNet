@@ -17,7 +17,8 @@ router
 
 router
   .route("/:id")
-  .get(alarmaController.updateAlarma)
+  .get(alarmaController.getAlarmaById)
+  .put(authenticateToken, alarmaController.updateAlarma)
   .delete(authenticateToken, alarmaController.deleteAlarma);
 
 export default router;

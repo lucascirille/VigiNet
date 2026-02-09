@@ -44,12 +44,27 @@ export const activarAlarma = async (usuarioId, descripcion, tipo) => {
 };
 
 
-export const getAllAlarmas = async () => {
+export const getAllAlarmas = async (filters = {}) => {
+  const where = {};
+
+  if (filters.usuarioId) {
+    where.usuarioId = parseInt(filters.usuarioId);
+  }
+
+  // Handle boolean specifically for "true"/"false" strings or boolean type
+  if (filters.activo !== undefined) {
+    where.activo = filters.activo === 'true' || filters.activo === true;
+  }
+
   return await prisma.alarma.findMany({
+    where,
     include: {
       usuario: true,
       ubicaciones: true,
     },
+    orderBy: {
+      fechaHora: 'desc' // Good practice to order by most recent
+    }
   });
 };
 
@@ -163,8 +178,15 @@ export const deleteAlarma = async (id) => {
   const alarmaId = parseInt(id);
   if (isNaN(alarmaId)) throw new Error("ID de alarma inválido");
 
-  return await prisma.alarma.delete({
-    where: { alarmaId: alarmaId },
+  return await prisma.$transaction(async (tx) => {
+    // Delete related Ubicacion records first to satisfy foreign key constraint
+    await tx.ubicacion.deleteMany({
+      where: { alarmaId: alarmaId },
+    });
+
+    return await tx.alarma.delete({
+      where: { alarmaId: alarmaId },
+    });
   });
 };
 
